@@ -28,7 +28,11 @@ func loadPage(title string) (*Page, error) {
 
 func handler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/"):]
-	p, _ := loadPage(title)
+	p, err := loadPage(title)
+	if err != nil {
+		title = "Login"
+		p, _ = loadPage(title)
+	}
 	fmt.Fprintf(w, "<div>%s</div>", p.Body)
 }
 
