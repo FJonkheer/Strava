@@ -56,35 +56,38 @@ func main() {
 func login(w http.ResponseWriter, r *http.Request) {
 	uname := r.FormValue("uname")
 	pword := r.FormValue("pword")
-	os.Open("Test.csv")
-
-	if fileExists("Test.csv") {
-		empData := [][]string{
-			{uname, pword}}
-		csvFile, err := os.OpenFile("Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-		if err != nil {
-			log.Fatalf("failed opening file: %s", err)
+	if len(uname) > 0 && len(pword) > 0 {
+		os.Open("Test.csv")
+		if fileExists("Test.csv") {
+			empData := [][]string{
+				{uname, pword}}
+			csvFile, err := os.OpenFile("Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+			if err != nil {
+				log.Fatalf("failed opening file: %s", err)
+			}
+			csvwriter := csv.NewWriter(csvFile)
+			for _, empRow := range empData {
+				_ = csvwriter.Write(empRow)
+			}
+			csvwriter.Flush()
+			csvFile.Close()
+		} else {
+			empData := [][]string{
+				{"uname", "pword"},
+				{uname, pword}}
+			csvFile, err := os.Create("Test.csv")
+			if err != nil {
+				log.Fatalf("failed creating file: %s", err)
+			}
+			csvwriter := csv.NewWriter(csvFile)
+			for _, empRow := range empData {
+				_ = csvwriter.Write(empRow)
+			}
+			csvwriter.Flush()
+			csvFile.Close()
 		}
-		csvwriter := csv.NewWriter(csvFile)
-		for _, empRow := range empData {
-			_ = csvwriter.Write(empRow)
-		}
-		csvwriter.Flush()
-		csvFile.Close()
 	} else {
-		empData := [][]string{
-			{"uname", "pword"},
-			{uname, pword}}
-		csvFile, err := os.Create("Test.csv")
-		if err != nil {
-			log.Fatalf("failed creating file: %s", err)
-		}
-		csvwriter := csv.NewWriter(csvFile)
-		for _, empRow := range empData {
-			_ = csvwriter.Write(empRow)
-		}
-		csvwriter.Flush()
-		csvFile.Close()
+		fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
 	}
 }
 
