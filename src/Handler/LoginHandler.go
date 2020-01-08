@@ -97,6 +97,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		fmt.Fprintf(w, "<div>%s</div>", "Benutzer erfolgreich erstellt")
+		http.Redirect(w, r, "/Upload", 203)
 	} else {
 		fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
 	}
@@ -109,6 +110,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if len(uname) > 0 && len(pword) > 0 {
 		pword = pword + salt
 		pword = Helper.GetMD5Hash(pword)
+		os.Chdir("data/userdata")
 		lines, err := Helper.ReadCsv("Test.csv")
 		if err != nil {
 			panic(err)
