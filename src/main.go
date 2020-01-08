@@ -8,6 +8,16 @@ import (
 	"net/http"
 )
 
+/*
+TODO:
+- Check if File exists (Register) - Wirft Fehler im Moment (hab ich wohl irgendwie wieder kaputt gemacht durch die Ordner)
+- Beim Login-Knopf prüfen, ob es überhaupt eine Tabelle gibt, sonst direkt "Fehlerhafte Anmeldedaten" ausgeben
+- Die Review-Page
+- Funktionalitäten der Upload-Seite
+- Was passiert mit den "geuploadeten" Dateien - regeln wo die hinmüssen, wie die abgespeichert werden
+- Back to MainPage-Button? - Auf Review und Upload-Seite
+*/
+
 type Page struct {
 	Title string
 	Body  []byte
