@@ -45,23 +45,42 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		} else {
 			password = password + salt
 			pword := Helper.GetMD5Hash(password)
-			os.Open("Test.csv")
-			if Helper.FileExists("Test.csv") {
-				empData := [][]string{
-					{uname, pword}}
-				csvFile, err := os.OpenFile("Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
-				if err != nil {
-					log.Fatalf("failed opening file: %s", err)
+			t, _ := Helper.FilePathExists("data/userdata")
+			if t {
+				os.Chdir("data/userdata")
+				if Helper.FileExists("Test.csv") {
+					os.Open("Test.csv")
+					empData := [][]string{
+						{uname, pword}}
+					csvFile, err := os.OpenFile("Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+					if err != nil {
+						log.Fatalf("failed opening file: %s", err)
+					}
+					csvwriter := csv.NewWriter(csvFile)
+					for _, empRow := range empData {
+						_ = csvwriter.Write(empRow)
+					}
+					csvwriter.Flush()
+					csvFile.Close()
+				} else {
+					empData := [][]string{
+						{"uname", "pword"},
+						{uname, pword}}
+					csvFile, err := os.Create("Test.csv")
+					if err != nil {
+						log.Fatalf("failed creating file: %s", err)
+					}
+					csvwriter := csv.NewWriter(csvFile)
+					for _, empRow := range empData {
+						_ = csvwriter.Write(empRow)
+					}
+					csvwriter.Flush()
+					csvFile.Close()
+
 				}
-				csvwriter := csv.NewWriter(csvFile)
-				for _, empRow := range empData {
-					_ = csvwriter.Write(empRow)
-				}
-				csvwriter.Flush()
-				csvFile.Close()
 			} else {
-				password = password + salt
-				pword := Helper.GetMD5Hash(password)
+				Helper.CreateFolders("data/userdata")
+				os.Chdir("data/userdata")
 				empData := [][]string{
 					{"uname", "pword"},
 					{uname, pword}}
@@ -75,7 +94,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				}
 				csvwriter.Flush()
 				csvFile.Close()
-
 			}
 		}
 		fmt.Fprintf(w, "<div>%s</div>", "Benutzer erfolgreich erstellt")
