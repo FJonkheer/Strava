@@ -14,7 +14,7 @@ type Page struct {
 }
 
 func loadPage(title string) (*Page, error) {
-	filename := title + ".txt"
+	filename := title + ".html"
 	body, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
