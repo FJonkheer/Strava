@@ -51,7 +51,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 					os.Open("Strava/data/userdata/Test.csv")
 					empData := [][]string{
 						{uname, pword}}
-					csvFile, err := os.OpenFile("Strava/data/userdataTest.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+					csvFile, err := os.OpenFile("Strava/data/userdata/Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 					if err != nil {
 						log.Fatalf("failed opening file: %s", err)
 					}
@@ -109,7 +109,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		if len(uname) > 0 && len(pword) > 0 {
 			pword = pword + salt
 			pword = Helper.GetMD5Hash(pword)
-			lines, err := Helper.ReadCsv("data/userdata/Test.csv")
+			lines, err := Helper.ReadCsv("Strava/data/userdata/Test.csv")
 			if err != nil {
 				panic(err)
 			}
