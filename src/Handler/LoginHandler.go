@@ -16,18 +16,18 @@ type User struct {
 
 func Handling(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("login") == "Login" {
-		Login(w, r)
+		login(w, r)
 	} else {
-		Register(w, r)
+		register(w, r)
 	}
 }
-func Register(w http.ResponseWriter, r *http.Request) {
+func register(w http.ResponseWriter, r *http.Request) {
 	uname := r.FormValue("uname")
 	password := r.FormValue("pword")
 	salt := "15967"
 	isGone := false
 	if len(uname) > 0 && len(password) > 0 {
-		lines, err := Helper.ReadCsv("Test.csv")
+		lines, err := Helper.ReadCsv("data/userdata/Test.csv")
 		if err != nil {
 			panic(err)
 		}
@@ -45,14 +45,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		} else {
 			password = password + salt
 			pword := Helper.GetMD5Hash(password)
-			t, _ := Helper.FilePathExists("data/userdata")
+			t, _ := Helper.FilePathExists("Strava/data/userdata")
 			if t {
-				os.Chdir("data/userdata")
-				if Helper.FileExists("Test.csv") {
-					os.Open("Test.csv")
+				if Helper.FileExists("data/userdata/Test.csv") {
+					os.Open("data/userdata/Test.csv")
 					empData := [][]string{
 						{uname, pword}}
-					csvFile, err := os.OpenFile("Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+					csvFile, err := os.OpenFile("data/userdataTest.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 					if err != nil {
 						log.Fatalf("failed opening file: %s", err)
 					}
@@ -66,7 +65,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 					empData := [][]string{
 						{"uname", "pword"},
 						{uname, pword}}
-					csvFile, err := os.Create("Test.csv")
+					csvFile, err := os.Create("data/userdata/Test.csv")
 					if err != nil {
 						log.Fatalf("failed creating file: %s", err)
 					}
@@ -76,15 +75,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 					}
 					csvwriter.Flush()
 					csvFile.Close()
-
 				}
 			} else {
-				Helper.CreateFolders("data/userdata")
-				os.Chdir("data/userdata")
+				Helper.CreateFolders("Strava/data/userdata")
 				empData := [][]string{
 					{"uname", "pword"},
 					{uname, pword}}
-				csvFile, err := os.Create("Test.csv")
+				csvFile, err := os.Create("data/userdata/Test.csv")
 				if err != nil {
 					log.Fatalf("failed creating file: %s", err)
 				}
@@ -96,13 +93,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				csvFile.Close()
 			}
 		}
-		fmt.Fprintf(w, "<div>%s</div>", "Benutzer erfolgreich erstellt")
-		http.Redirect(w, r, "/Upload", 203)
+		http.Redirect(w, r, "/MainPage", 301)
 	} else {
 		fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
 	}
 }
-func Login(w http.ResponseWriter, r *http.Request) {
+func login(w http.ResponseWriter, r *http.Request) {
 	uname := r.FormValue("uname")
 	pword := r.FormValue("pword")
 	salt := "15967"
@@ -110,8 +106,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if len(uname) > 0 && len(pword) > 0 {
 		pword = pword + salt
 		pword = Helper.GetMD5Hash(pword)
-		os.Chdir("data/userdata")
-		lines, err := Helper.ReadCsv("Test.csv")
+		lines, err := Helper.ReadCsv("data/userdata/Test.csv")
 		if err != nil {
 			panic(err)
 		}
@@ -121,8 +116,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				password: line[1],
 			}
 			if data.username == uname && data.password == pword {
-				fmt.Fprintf(w, "<div>%s</div>", "Login erfolgreich")
-				success = true
+				//Redirect
+				http.Redirect(w, r, "/MainPage", 301)
 				break
 			}
 		}

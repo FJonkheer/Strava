@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Upload</title>
+</head>
+<body>
     <h1>Upload:</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" action="upload.php">
         Aktivit&auml;t:&nbsp; &nbsp;
         <select name="types">
             <option>Laufen</option>
@@ -17,8 +19,5 @@
                type="file" size="50" accept="*"><br><br>
         <input name="upload&quot;" type="submit" value="Upload" />
     </form>
-</head>
-<body>
-
 </body>
 </html>

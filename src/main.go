@@ -15,7 +15,7 @@ type Page struct {
 
 func loadPage(title string) (*Page, error) {
 	filename := title + ".html"
-	body, err := ioutil.ReadFile(filename)
+	body, err := ioutil.ReadFile("Sites/" + filename)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +34,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", handler)
-	http.HandleFunc("/action_page.php", Handler.Handling)
+	http.HandleFunc("/submit.php", Handler.Handling)
+	http.HandleFunc("/redirect.php", Handler.Redirecting)
 	log.Fatal(http.ListenAndServe(":9090", nil))
 }
