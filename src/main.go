@@ -10,8 +10,6 @@ import (
 
 /*
 TODO:
-- Check if File exists (Register) - Wirft Fehler im Moment (hab ich wohl irgendwie wieder kaputt gemacht durch die Ordner)
-- Beim Login-Knopf prüfen, ob es überhaupt eine Tabelle gibt, sonst direkt "Fehlerhafte Anmeldedaten" ausgeben
 - Die Review-Page
 - Funktionalitäten der Upload-Seite
 - Was passiert mit den "geuploadeten" Dateien - regeln wo die hinmüssen, wie die abgespeichert werden
@@ -43,8 +41,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/submit.php", Handler.Handling)
 	http.HandleFunc("/redirect.php", Handler.Redirecting)
-	log.Fatal(http.ListenAndServe(":9090", nil))
+	log.Fatal(http.ListenAndServeTLS(":9090", "src/Auth/cert.pem", "src/Auth/key.pem", nil))
 }
