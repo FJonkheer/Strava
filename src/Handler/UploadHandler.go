@@ -16,7 +16,9 @@ import (
 
 //Die Upload-Funktion
 func Uploader(w http.ResponseWriter, r *http.Request) {
-	Pfad := "Files/Username/"                    //jeder Benutzer hat seinen eigenen Dateispeicherort
+	cookie, _ := r.Cookie(Uname)
+
+	Pfad := "Files/" + cookie.Value + "/"        //jeder Benutzer hat seinen eigenen Dateispeicherort
 	file, fileheader, err := r.FormFile("datei") //nimmt sich die Datei aus dem HTTP Request
 	if err != nil {
 		fmt.Fprintf(w, "<div>%s</div>", err)

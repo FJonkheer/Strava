@@ -2,6 +2,7 @@ package main
 
 import (
 	"Handler"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -57,6 +58,8 @@ func back(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	portFlag := flag.String("port", ":9090", "choose Port")
+	flag.Parse()
 	http.HandleFunc("/", handler)                             //der generelle Seitenaufruf
 	http.HandleFunc("/submit.php", Handler.Handling)          //der Login-Aufruf
 	http.HandleFunc("/redirect.php", Handler.Redirecting)     //die Weiterleitung von der Startseite
@@ -66,5 +69,5 @@ func main() {
 	http.HandleFunc("/delete.php", Handler.DeleteHandler)     //Löschen von Dateien
 	http.HandleFunc("/change.php", Handler.ChangeHandler)     //Ändern der InfoDatei
 	http.HandleFunc("/Review", Handler.Reviewer)
-	log.Fatal(http.ListenAndServeTLS(":9090", "src/Auth/cert.pem", "src/Auth/key.pem", nil)) //der "Webserver"
+	log.Fatal(http.ListenAndServeTLS(*portFlag, "src/Auth/cert.pem", "src/Auth/key.pem", nil)) //der "Webserver"
 }

@@ -7,7 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
+
+var Uname string
 
 type User struct { //Die Struktur eines Benutzers
 	username string
@@ -105,11 +108,12 @@ func Handling(w http.ResponseWriter, r *http.Request) { //Wurde "Login" oder "Re
 */
 
 func register(w http.ResponseWriter, r *http.Request) {
-	uname := r.FormValue("uname")
+
+	Uname := r.FormValue("uname")
 	password := r.FormValue("pword")
 	salt := "15967" //Der Salt, welcher zum Verschlüsseln genutzt wird
 	isGone := false
-	if len(uname) > 0 && len(password) > 0 { //Wurde ein Benutzername und ein Passwort eingegeben?
+	if len(Uname) > 0 && len(password) > 0 { //Wurde ein Benutzername und ein Passwort eingegeben?
 		password = password + salt           //Salting des Passworts
 		pword := Helper.GetMD5Hash(password) //Hashing des Passworts mit Salt
 
@@ -141,7 +145,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 				username: line[0],
 				password: line[1],
 			}
-			if data.username == uname {
+			if data.username == Uname {
 				isGone = true
 			}
 		}
@@ -150,7 +154,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		} else { //Wenn es den Benutzernamen noch nicht gibt
 			os.Open("data/userdata/Test.csv")
 			empData := [][]string{
-				{uname, pword}}
+				{Uname, pword}}
 			csvFile, err := os.OpenFile("data/userdata/Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 			if err != nil {
 				log.Fatalf("failed opening file: %s", err)
@@ -169,13 +173,13 @@ func register(w http.ResponseWriter, r *http.Request) {
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
-	uname := r.FormValue("uname")
+	Uname := r.FormValue("uname")
 	pword := r.FormValue("pword")
 	salt := "15967" //Wird zum Saling des Passwords genutzt
 	if !Helper.FileExists("data/userdata/Test.csv") {
 		fmt.Fprintf(w, "<div>%s</div>", "Keine User Vorhanden")
 	} else {
-		if len(uname) > 0 && len(pword) > 0 {
+		if len(Uname) > 0 && len(pword) > 0 {
 			pword = pword + salt                                   //Salting
 			pword = Helper.GetMD5Hash(pword)                       //Hashing
 			lines, err := Helper.ReadCsv("data/userdata/Test.csv") //Auslesen aller Einloggdaten
@@ -187,7 +191,10 @@ func login(w http.ResponseWriter, r *http.Request) {
 					username: line[0],
 					password: line[1],
 				}
-				if data.username == uname && data.password == pword { //Wenn es eine passende User/Passwort-Kombination gibt
+				if data.username == Uname && data.password == pword { //Wenn es eine passende User/Passwort-Kombination gibt
+					expiration := time.Now().Add(365 * 24 * time.Hour)
+					cookie := http.Cookie{Name: Uname, Value: Uname, Expires: expiration}
+					http.SetCookie(w, &cookie)
 					http.Redirect(w, r, "/MainPage", 301) //Wird auf die Startseite weitergeleitet
 				}
 			}

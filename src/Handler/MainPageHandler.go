@@ -1,8 +1,11 @@
 package Handler
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func Redirecting(w http.ResponseWriter, r *http.Request) { //Weiterleiten auf Upload oder Review
+
 	if r.FormValue("redirect") == "Upload File" {
 		upload(w, r)
 	} else {
