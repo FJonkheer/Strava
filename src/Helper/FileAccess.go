@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func FileExists(filename string) bool {
+func FileExists(filename string) bool { //Abfrage, ob eine Datei bereits existiert
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		return false
@@ -13,7 +13,7 @@ func FileExists(filename string) bool {
 	return !info.IsDir()
 }
 
-func FilePathExists(path string) (bool, error) {
+func FilePathExists(path string) (bool, error) { //Abfrage, ob der Pfad bereits existiert
 	_, err := os.Stat(path)
 	if err == nil {
 		return true, nil
@@ -24,11 +24,11 @@ func FilePathExists(path string) (bool, error) {
 	return true, err
 }
 
-func CreateFolders(path string) error {
+func CreateFolders(path string) error { //Alle Ordner des Pfads erstellen
 	return os.MkdirAll(path, os.ModePerm)
 }
 
-func ReadCsv(filename string) ([][]string, error) {
+func ReadCsv(filename string) ([][]string, error) { //Eine CSV-Datei auslesen
 
 	// Open CSV file
 	f, err := os.Open(filename)

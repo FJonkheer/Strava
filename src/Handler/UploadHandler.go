@@ -14,49 +14,51 @@ import (
 	"time"
 )
 
+//Die Upload-Funktion
 func Uploader(w http.ResponseWriter, r *http.Request) {
-	Pfad := "Files/Username/"
-	file, fileheader, err := r.FormFile("datei")
+	Pfad := "Files/Username/"                    //jeder Benutzer hat seinen eigenen Dateispeicherort
+	file, fileheader, err := r.FormFile("datei") //nimmt sich die Datei aus dem HTTP Request
 	if err != nil {
 		fmt.Fprintf(w, "<div>%s</div>", err)
 	}
-	filename := fileheader.Filename
-	e, _ := Helper.FilePathExists(Pfad)
+	filename := fileheader.Filename     //der Dateiname wird aus dem Header gesucht
+	e, _ := Helper.FilePathExists(Pfad) //Existiert der Ort, an dem die Daten gespeichert werden sollen schon
 	if !e {
-		Helper.CreateFolders(Pfad)
+		Helper.CreateFolders(Pfad) //Wenn die Ordner nicht existieren, sollen diese erstellt werden
 	}
 	defer file.Close()
-	fileBytes, _ := ioutil.ReadAll(file)
-	newFile, _ := os.Create(Pfad + filename)
-	newFile.Write(fileBytes)
+	fileBytes, _ := ioutil.ReadAll(file)     //Liest die Datei aus
+	newFile, _ := os.Create(Pfad + filename) //Erstellt die Zieldatei
+	newFile.Write(fileBytes)                 //Beschreibt die Zieldatei mit den Daten der Ursprungsdatei
 	newFile.Close()
-	detectedFileType := http.DetectContentType(fileBytes)
+	detectedFileType := http.DetectContentType(fileBytes) //Ermittelt die Dateiendung
 	datei := filename
-	if detectedFileType == "application/zip" {
-		datei, err = unZip(Pfad+filename, Pfad)
+	if detectedFileType == "application/zip" { //Falls es sich um eine .zip handelt, muss diese noch entpackt werden
+		datei, err = unZip(Pfad+filename, Pfad) //Entpacken
 		if err != nil {
 			fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
 		}
 	}
 
+	//Speichern der Metadaten zu der hochgeladenen Datei
 	currentTime := time.Now()
 	date := currentTime.Format("2006-01-02")
-	activity := r.FormValue("types")
-	comment := r.FormValue("comment")
+	activity := r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
+	comment := r.FormValue("comment") //liest den Benutzer-Kommentar
 	empData := [][]string{
 		{"uploaddate", "type", "comment"},
-		{date, activity, comment}}
-	infofile, err := os.Create(Pfad + datei + ".csv")
+		{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
+	infofile, err := os.Create(Pfad + datei + ".csv") //Erstellen der Infodatei
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
-	csvwriter := csv.NewWriter(infofile)
+	csvwriter := csv.NewWriter(infofile) //Beschreiben der CSV-Datei
 	for _, empRow := range empData {
 		csvwriter.Write(empRow)
 	}
 	csvwriter.Flush()
 	infofile.Close()
-
+	Helper.Gpxread(Pfad + datei) //Auslesen der GPX-Datei, muss eventuell verschoben werden, hat hier keinen Sinn
 	http.Redirect(w, r, "/MainPage", 301)
 }
 
