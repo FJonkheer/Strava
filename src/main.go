@@ -57,13 +57,13 @@ func back(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", handler)                             //der generelle Seitenaufruf
-	http.HandleFunc("/submit.php", Handler.Handling)          //der Login-Aufruf
-	http.HandleFunc("/redirect.php", Handler.Redirecting)     //die Weiterleitung von der Startseite
-	http.HandleFunc("/back.php", back)                        //das Zurückleiten auf die MainPage
-	http.HandleFunc("/upload.php", Handler.Uploader)          //der Dateiupload
-	http.HandleFunc("/download.php", Handler.DownloadHandler) //Download einer Datei
-	http.HandleFunc("/delete.php", Handler.DeleteHandler)     //Löschen von Dateien
-	http.HandleFunc("/change.php", Handler.ChangeHandler)
+	http.HandleFunc("/", handler)                                                            //der generelle Seitenaufruf
+	http.HandleFunc("/submit.php", Handler.Handling)                                         //der Login-Aufruf
+	http.HandleFunc("/redirect.php", Handler.Redirecting)                                    //die Weiterleitung von der Startseite
+	http.HandleFunc("/back.php", back)                                                       //das Zurückleiten auf die MainPage
+	http.HandleFunc("/upload.php", Handler.Uploader)                                         //der Dateiupload
+	http.HandleFunc("/download.php", Handler.DownloadHandler)                                //Download einer Datei
+	http.HandleFunc("/delete.php", Handler.DeleteHandler)                                    //Löschen von Dateien
+	http.HandleFunc("/change.php", Handler.ChangeHandler)                                    //Ändern der InfoDatei
 	log.Fatal(http.ListenAndServeTLS(":9090", "src/Auth/cert.pem", "src/Auth/key.pem", nil)) //der "Webserver"
 }
