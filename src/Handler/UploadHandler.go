@@ -3,12 +3,15 @@ package Handler
 import (
 	"Helper"
 	"archive/zip"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 func Uploader(w http.ResponseWriter, r *http.Request) {
@@ -33,15 +36,33 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
 		}
 	}
+	currentTime := time.Now()
+	date := currentTime.Format("2006-01-02")
+	activity := r.FormValue("types")
+	comment := r.FormValue("comment")
+	empData := [][]string{
+		{"uploaddate", "type", "comment"},
+		{date, activity, comment}}
+	infofile, err := os.Create("Files/" + filename + ".csv")
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+	csvwriter := csv.NewWriter(infofile)
+	for _, empRow := range empData {
+		_ = csvwriter.Write(empRow)
+	}
+	csvwriter.Flush()
+	infofile.Close()
+
 	http.Redirect(w, r, "/MainPage", 301)
 }
 
+/* Source = https://golangcode.com/unzip-files-in-go/ */
 func unZip(src string, dir string) error {
 	r, err := zip.OpenReader(src)
 	defer r.Close()
 	fpath := ""
 	for _, f := range r.File {
-
 		fpath = filepath.Join(dir, f.Name)
 		if f.FileInfo().IsDir() {
 			// Make Folder
@@ -56,16 +77,13 @@ func unZip(src string, dir string) error {
 		if err != nil {
 			return err
 		}
-
 		rc, err := f.Open()
 		if err != nil {
 			return err
 		}
-
 		_, err = io.Copy(outFile, rc)
 		outFile.Close()
 		rc.Close()
-
 		if err != nil {
 			return err
 		}
