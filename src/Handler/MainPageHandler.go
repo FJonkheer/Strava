@@ -17,7 +17,3 @@ func upload(w http.ResponseWriter, r *http.Request) {
 func review(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/Review", 301)
 }
-
-func back(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/MainPage", 301)
-}

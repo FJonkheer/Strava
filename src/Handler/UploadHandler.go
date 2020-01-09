@@ -15,27 +15,30 @@ import (
 )
 
 func Uploader(w http.ResponseWriter, r *http.Request) {
+	Pfad := "Files/Username/"
 	file, fileheader, err := r.FormFile("datei")
 	if err != nil {
 		fmt.Fprintf(w, "<div>%s</div>", err)
 	}
 	filename := fileheader.Filename
-	e, _ := Helper.FilePathExists("Files")
+	e, _ := Helper.FilePathExists(Pfad)
 	if !e {
-		os.Mkdir("Files", os.ModePerm)
+		Helper.CreateFolders(Pfad)
 	}
 	defer file.Close()
 	fileBytes, _ := ioutil.ReadAll(file)
-	newFile, _ := os.Create("Files/" + filename)
+	newFile, _ := os.Create(Pfad + filename)
 	newFile.Write(fileBytes)
 	newFile.Close()
 	detectedFileType := http.DetectContentType(fileBytes)
+	datei := filename
 	if detectedFileType == "application/zip" {
-		err := unZip("Files/"+filename, "Files/")
+		datei, err = unZip(Pfad+filename, Pfad)
 		if err != nil {
 			fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
 		}
 	}
+
 	currentTime := time.Now()
 	date := currentTime.Format("2006-01-02")
 	activity := r.FormValue("types")
@@ -43,13 +46,13 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 	empData := [][]string{
 		{"uploaddate", "type", "comment"},
 		{date, activity, comment}}
-	infofile, err := os.Create("Files/" + filename + ".csv")
+	infofile, err := os.Create(Pfad + datei + ".csv")
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
 	csvwriter := csv.NewWriter(infofile)
 	for _, empRow := range empData {
-		_ = csvwriter.Write(empRow)
+		csvwriter.Write(empRow)
 	}
 	csvwriter.Flush()
 	infofile.Close()
@@ -58,7 +61,7 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 }
 
 /* Source = https://golangcode.com/unzip-files-in-go/ */
-func unZip(src string, dir string) error {
+func unZip(src string, dir string) (string, error) {
 	r, err := zip.OpenReader(src)
 	defer r.Close()
 	fpath := ""
@@ -71,22 +74,22 @@ func unZip(src string, dir string) error {
 		}
 		// Make File
 		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-			return err
+			return "", err
 		}
 		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 		if err != nil {
-			return err
+			return "", err
 		}
 		rc, err := f.Open()
 		if err != nil {
-			return err
+			return "", err
 		}
 		_, err = io.Copy(outFile, rc)
 		outFile.Close()
 		rc.Close()
 		if err != nil {
-			return err
+			return "", err
 		}
 	}
-	return nil
+	return fpath, nil
 }

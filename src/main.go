@@ -10,12 +10,20 @@ import (
 
 /*
 TODO:
-- Die Review-Page
-- Erweiterte Funktionalitäten der Upload-Seite (Kommentar, Laufen/Fahrrad und Uploaddatum abspeichern
-- Ordner pro hochladenem Nutzer erstellen und Dateien dort abspeichern
-- Abfrage ob Datei bereits vorhanden ist
-- Was passiert mit den "geuploadeten" Dateien - regeln wo die hinmüssen, wie die abgespeichert werden
-- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung
+	- Die Review-Page-Funktionalitäten
+		- Anzeige der GPX-Dateien
+		- Anzeige der gespeicherten Informationen zu jeder GPX-Datei
+		- Download von GPX/ZIP-Dateien
+		- Löschen von GPX-Dateien (mit Bestätigung)
+		- Die Verarbeitung der .gpx-Dateien
+	- Ordner pro hochladenem Nutzer erstellen und Dateien dort abspeichern
+	- Abfrage ob Datei bereits vorhanden ist beim Upload (Error-Handling)
+	- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung (keine weiße Seite nur wmit Fehlermeldung)
+	- Upload-Konventionen (Muss ein Kommentar eingegeben werden? Wurde überhaupt eine Datei ausgewählt?)
+
+Error-Handling
+Kommentare
+Tests
 */
 
 type Page struct {
