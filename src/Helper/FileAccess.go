@@ -2,6 +2,7 @@ package Helper
 
 import (
 	"encoding/csv"
+	"net/http"
 	"os"
 )
 
@@ -44,4 +45,31 @@ func ReadCsv(filename string) ([][]string, error) { //Eine CSV-Datei auslesen
 	}
 
 	return lines, nil
+}
+
+func DeleteFiles(path string) error { //Löschen von GPX-Datei und zugehörigen Dateien
+	err := os.Remove(path) //Löschen der GPX-Datei
+	if err != nil {
+		return err
+	}
+	err = os.Remove(path + ".csv") //Die Infodatei soll auch entfernt werden
+	if err != nil {
+		return err
+	}
+	exists := FileExists(path + ".zip")
+	if exists {
+		err = os.Remove(path + ".zip") //wenn eine zugehörige ZIP-Datei existiert soll auch diese gelöscht werden
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herunterladen einer Datei
+	exists := FileExists(path + ".zip") //Falls eine zugehörige ZIP existiert, soll diese heruntergeladen werden
+	if exists {
+		path = path + ".zip"
+	}
+	http.ServeFile(w, r, path)
 }
