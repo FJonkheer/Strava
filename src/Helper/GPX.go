@@ -16,13 +16,13 @@ type trkpt struct {
 }
 
 //Metadaten und alle Trackpoints der gpx-Datei
-type metadata struct {
+type Metadata struct {
 	Date        string  `xml:"metadata>time"`
 	Trackpoints []trkpt `xml:"trk>trkseg>trkpt"`
 }
 
-//einlesen der Gpx-Datei
-func Gpxread(path string) {
+//auslesen einer Gpx-Datei
+func GpxRead(path string) Metadata {
 	xmlFile, err := os.Open(path) //öffnen des GPX-Files
 	if err != nil {
 		fmt.Println(err)
@@ -31,7 +31,7 @@ func Gpxread(path string) {
 	defer xmlFile.Close()                   //schließen des GPX-Files
 	byteValue, _ := ioutil.ReadAll(xmlFile) //den Inhalt des GPX-Files auslesen
 
-	var Run metadata //ein Objekt der Struktur metadata erstellen
+	var Run Metadata //ein Objekt der Struktur metadata erstellen
 
 	err = xml.Unmarshal(byteValue, &Run)        //unmarshal liest den Inhalt des GPX-Files aus und sortiert die Einträge in das mitgegebene Objekt
 	Run.Date = strings.Split(Run.Date, "T")[0]  //Das Datum von der Uhrzeit trennen
@@ -39,10 +39,6 @@ func Gpxread(path string) {
 	for i := 0; i < len(Run.Trackpoints); i++ { //von jedem Trackpoint die Zeit formatieren
 		Run.Trackpoints[i].Time = strings.Split(Run.Trackpoints[i].Time, "T")[1]
 		Run.Trackpoints[i].Time = strings.Replace(Run.Trackpoints[i].Time, "Z", "", -1)
-
-		//Ausgabe, kann dann irgendwann weg
-		fmt.Println("Trackpoint Time: " + Run.Trackpoints[i].Time)
-		fmt.Println("Trackpoint longitude: " + Run.Trackpoints[i].Longitude)
-		fmt.Println("Trackpoint latitude: " + Run.Trackpoints[i].Latitude + "\n")
 	}
+	return Run
 }
