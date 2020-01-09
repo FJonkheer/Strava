@@ -46,26 +46,27 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 			datei = Pfad + datei
 		}
 
-	//Speichern der Metadaten zu der hochgeladenen Datei
-	currentTime := time.Now()
-	date := currentTime.Format("2006-01-02")
-	activity := r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
-	comment := r.FormValue("comment") //liest den Benutzer-Kommentar
-	empData := [][]string{
-		{"uploaddate", "type", "comment"},
-		{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
-	infofile, err := os.Create(datei + ".csv") //Erstellen der Infodatei
-	if err != nil {
-		log.Fatalf("failed creating file: %s", err)
+		//Speichern der Metadaten zu der hochgeladenen Datei
+		currentTime := time.Now()
+		date := currentTime.Format("2006-01-02")
+		activity := r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
+		comment := r.FormValue("comment") //liest den Benutzer-Kommentar
+		empData := [][]string{
+			{"uploaddate", "type", "comment"},
+			{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
+		infofile, err := os.Create(datei + ".csv") //Erstellen der Infodatei
+		if err != nil {
+			log.Fatalf("failed creating file: %s", err)
+		}
+		csvwriter := csv.NewWriter(infofile) //Beschreiben der CSV-Datei
+		for _, empRow := range empData {
+			csvwriter.Write(empRow)
+		}
+		csvwriter.Flush()
+		infofile.Close()
+		fmt.Println(Helper.CalculateEverything(datei)) //Auslesen der GPX-Datei, muss eventuell verschoben werden, hat hier keinen Sinn
+		http.Redirect(w, r, "/MainPage", 301)
 	}
-	csvwriter := csv.NewWriter(infofile) //Beschreiben der CSV-Datei
-	for _, empRow := range empData {
-		csvwriter.Write(empRow)
-	}
-	csvwriter.Flush()
-	infofile.Close()
-	fmt.Println(Helper.CalculateEverything(datei)) //Auslesen der GPX-Datei, muss eventuell verschoben werden, hat hier keinen Sinn
-	http.Redirect(w, r, "/MainPage", 301)
 }
 
 /* Source = https://golangcode.com/unzip-files-in-go/ */
