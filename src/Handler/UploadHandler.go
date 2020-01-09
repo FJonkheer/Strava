@@ -17,32 +17,34 @@ import (
 //Die Upload-Funktion
 func Uploader(w http.ResponseWriter, r *http.Request) {
 	cookie, _ := r.Cookie(Uname)
-
-	Pfad := "Files/" + cookie.Value + "/"        //jeder Benutzer hat seinen eigenen Dateispeicherort
-	file, fileheader, err := r.FormFile("datei") //nimmt sich die Datei aus dem HTTP Request
-	if err != nil {
-		fmt.Fprintf(w, "<div>%s</div>", err)
-	}
-	filename := fileheader.Filename     //der Dateiname wird aus dem Header gesucht
-	e, _ := Helper.FilePathExists(Pfad) //Existiert der Ort, an dem die Daten gespeichert werden sollen schon
-	if !e {
-		Helper.CreateFolders(Pfad) //Wenn die Ordner nicht existieren, sollen diese erstellt werden
-	}
-	defer file.Close()
-	fileBytes, _ := ioutil.ReadAll(file)     //Liest die Datei aus
-	newFile, _ := os.Create(Pfad + filename) //Erstellt die Zieldatei
-	newFile.Write(fileBytes)                 //Beschreibt die Zieldatei mit den Daten der Ursprungsdatei
-	newFile.Close()
-	detectedFileType := http.DetectContentType(fileBytes) //Ermittelt die Dateiendung
-	datei := filename
-	if detectedFileType == "application/zip" { //Falls es sich um eine .zip handelt, muss diese noch entpackt werden
-		datei, err = unZip(Pfad+filename, Pfad) //Entpacken
-		if err != nil {
-			fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
-		}
+	if cookie == nil {
+		http.Redirect(w, r, "/Login", 301)
 	} else {
-		datei = Pfad + datei
-	}
+		Pfad := "Files/" + cookie.Value + "/"        //jeder Benutzer hat seinen eigenen Dateispeicherort
+		file, fileheader, err := r.FormFile("datei") //nimmt sich die Datei aus dem HTTP Request
+		if err != nil {
+			fmt.Fprintf(w, "<div>%s</div>", err)
+		}
+		filename := fileheader.Filename     //der Dateiname wird aus dem Header gesucht
+		e, _ := Helper.FilePathExists(Pfad) //Existiert der Ort, an dem die Daten gespeichert werden sollen schon
+		if !e {
+			Helper.CreateFolders(Pfad) //Wenn die Ordner nicht existieren, sollen diese erstellt werden
+		}
+		defer file.Close()
+		fileBytes, _ := ioutil.ReadAll(file)     //Liest die Datei aus
+		newFile, _ := os.Create(Pfad + filename) //Erstellt die Zieldatei
+		newFile.Write(fileBytes)                 //Beschreibt die Zieldatei mit den Daten der Ursprungsdatei
+		newFile.Close()
+		detectedFileType := http.DetectContentType(fileBytes) //Ermittelt die Dateiendung
+		datei := filename
+		if detectedFileType == "application/zip" { //Falls es sich um eine .zip handelt, muss diese noch entpackt werden
+			datei, err = unZip(Pfad+filename, Pfad) //Entpacken
+			if err != nil {
+				fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
+			}
+		} else {
+			datei = Pfad + datei
+		}
 
 	//Speichern der Metadaten zu der hochgeladenen Datei
 	currentTime := time.Now()
