@@ -62,7 +62,7 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 	}
 	csvwriter.Flush()
 	infofile.Close()
-	Helper.Gpxread(Pfad + datei) //Auslesen der GPX-Datei, muss eventuell verschoben werden, hat hier keinen Sinn
+	Helper.Gpxread(datei) //Auslesen der GPX-Datei, muss eventuell verschoben werden, hat hier keinen Sinn
 	http.Redirect(w, r, "/MainPage", 301)
 }
 
