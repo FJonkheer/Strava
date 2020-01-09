@@ -40,6 +40,8 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
 		}
+	} else {
+		datei = Pfad + datei
 	}
 
 	//Speichern der Metadaten zu der hochgeladenen Datei
@@ -50,7 +52,7 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 	empData := [][]string{
 		{"uploaddate", "type", "comment"},
 		{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
-	infofile, err := os.Create(Pfad + datei + ".csv") //Erstellen der Infodatei
+	infofile, err := os.Create(datei + ".csv") //Erstellen der Infodatei
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
@@ -70,7 +72,7 @@ func unZip(src string, dir string) (string, error) {
 	defer r.Close()
 	fpath := ""
 	for _, f := range r.File {
-		fpath = filepath.Join(dir, f.Name)
+		fpath = dir + f.Name
 		if f.FileInfo().IsDir() {
 			// Make Folder
 			os.MkdirAll(fpath, os.ModePerm)
