@@ -165,6 +165,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 			}
 			csvwriter.Flush()
 			csvFile.Close()
+			expiration := time.Now().Add(365 * 24 * time.Hour)
+			cookie := http.Cookie{Name: Uname, Value: Uname, Expires: expiration}
+			http.SetCookie(w, &cookie)
 		}
 	} else {
 		fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
