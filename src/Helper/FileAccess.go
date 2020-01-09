@@ -2,6 +2,7 @@ package Helper
 
 import (
 	"encoding/csv"
+	"log"
 	"net/http"
 	"os"
 )
@@ -72,4 +73,28 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 		path = path + ".zip"
 	}
 	http.ServeFile(w, r, path)
+}
+
+func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
+	path := "Files/Username/" //Benutzernamenabfrage
+	//Speichern der Metadaten zu der hochgeladenen Datei
+	content, err := ReadCsv(path + file)
+
+	date := content[1][0]
+	activity := r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
+	comment := r.FormValue("comment") //liest den Benutzer-Kommentar
+	empData := [][]string{
+		{"uploaddate", "type", "comment"},
+		{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
+	infofile, err := os.Create(path + file + ".csv") //Erstellen der Infodatei
+	if err != nil {
+		log.Fatalf("failed creating file: %s", err)
+	}
+	csvwriter := csv.NewWriter(infofile) //Beschreiben der CSV-Datei
+	for _, empRow := range empData {
+		csvwriter.Write(empRow)
+	}
+	csvwriter.Flush()
+	infofile.Close()
+	http.Redirect(w, r, "/Review", 301)
 }

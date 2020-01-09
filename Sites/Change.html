@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Change InfoFile</title>
+</head>
+<body>
+    <h1>Change InfoFile:</h1>
+    <form method="post" enctype="multipart/form-data" action="change.php">
+        Aktivit&auml;t:&nbsp; &nbsp;
+        <select name="types">
+            <option>Laufen</option>
+            <option>Fahrrad fahren</option>
+        </select>
+
+        <br /><br />Kommentar:&nbsp; &nbsp;
+        <input name="comment" type="text" /><br><br>
+        <input name="change" type="submit" value="Change" />
+    </form>
+    <form method="post" enctype="multipart/form-data" action="back.php">
+        <input name="back" type="submit" value="Back to MainPage"/>
+    </form>
+</body>
+</html>
