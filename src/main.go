@@ -11,9 +11,11 @@ import (
 /*
 TODO:
 - Die Review-Page
-- Funktionalitäten der Upload-Seite
+- Erweiterte Funktionalitäten der Upload-Seite (Kommentar, Laufen/Fahrrad und Uploaddatum abspeichern
+- Ordner pro hochladenem Nutzer erstellen und Dateien dort abspeichern
+- Abfrage ob Datei bereits vorhanden ist
 - Was passiert mit den "geuploadeten" Dateien - regeln wo die hinmüssen, wie die abgespeichert werden
-- Back to MainPage-Button? - Auf Review und Upload-Seite
+- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung
 */
 
 type Page struct {
@@ -40,10 +42,15 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "<div>%s</div>", p.Body)
 }
 
-func main() {
+func back(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/MainPage", 301)
+}
 
+func main() {
 	http.HandleFunc("/", handler)
 	http.HandleFunc("/submit.php", Handler.Handling)
 	http.HandleFunc("/redirect.php", Handler.Redirecting)
+	http.HandleFunc("/back.php", back)
+	http.HandleFunc("/upload.php", Handler.Uploader)
 	log.Fatal(http.ListenAndServeTLS(":9090", "src/Auth/cert.pem", "src/Auth/key.pem", nil))
 }

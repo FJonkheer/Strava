@@ -15,9 +15,11 @@
 
         <br /><br />Kommentar:&nbsp; &nbsp;
         <input name="comment" type="text" /><br><br>
-        <input name="datei"
-               type="file" size="50" accept="*"><br><br>
-        <input name="upload&quot;" type="submit" value="Upload" />
+        <input name="datei" type="file" accept=".gpx,.zip"><br><br>
+        <input name="upload" type="submit" value="Upload" />
+    </form>
+    <form method="post" enctype="multipart/form-data" action="back.php">
+        <input name="back" type="submit" value="Back to MainPage"/>
     </form>
 </body>
 </html>
