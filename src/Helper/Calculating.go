@@ -6,11 +6,22 @@ import (
 	"time"
 )
 
-func CalculateEverything(file string) (float64, float64, float64, time.Duration) {
+func GetInfo(file string) (string, time.Duration, float64, float64, float64, time.Duration) {
+	duration, distance, highspeed, avgspeed, standtime := calculateEverything(file)
+	date := getDate(file)
+	return date, duration, distance, highspeed, avgspeed, standtime
+}
+
+func getDate(file string) string {
+	Run := GpxRead(file)
+	return Run.Date
+}
+
+func calculateEverything(file string) (time.Duration, float64, float64, float64, time.Duration) {
 	Run := GpxRead(file)
 	distance := calculateDistance(Run)
-	highspeed, avgspeed, standtime := calculateSpeed(Run)
-	return distance, highspeed, avgspeed, standtime
+	duration, highspeed, avgspeed, standtime := calculateSpeed(Run)
+	return duration, distance, highspeed, avgspeed, standtime
 }
 
 func calculateDistance(Run Metadata) float64 {
@@ -27,11 +38,11 @@ func calculateDistance(Run Metadata) float64 {
 	return totaldistance
 }
 
-func calculateSpeed(Run Metadata) (float64, float64, time.Duration) {
+func calculateSpeed(Run Metadata) (time.Duration, float64, float64, time.Duration) {
 	avgspeed := 0.0
 	maxspeed := 0.0
 	count := 0.0
-	var standtime time.Duration
+	var standtime, duration time.Duration
 	for i := 0; i < len(Run.Trackpoints)-1; i++ {
 		Time, _ := time.Parse("15:04:05.000", Run.Trackpoints[i].Time)
 		Time2, _ := time.Parse("15:04:05.000", Run.Trackpoints[i+1].Time)
@@ -55,9 +66,10 @@ func calculateSpeed(Run Metadata) (float64, float64, time.Duration) {
 		} else {
 			standtime += timediff
 		}
+		duration += timediff
 	}
 	avgspeed = avgspeed / count
-	return maxspeed, avgspeed, standtime
+	return duration, maxspeed, avgspeed, standtime
 }
 
 func Validation(maxspeed float64, avgspeed float64, distance float64) string {

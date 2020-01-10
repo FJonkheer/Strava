@@ -45,15 +45,31 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		} else {
 			datei = Pfad + datei
 		}
-
-		//Speichern der Metadaten zu der hochgeladenen Datei
-		currentTime := time.Now()
-		date := currentTime.Format("2006-01-02")
+		filedate, duration, distance, maxspeed, avgspeed, standtime := Helper.GetInfo(datei)
+		idistance := fmt.Sprintf("%f", distance)
+		imaxspeed := fmt.Sprintf("%f", maxspeed)
+		iavgspeed := fmt.Sprintf("%f", avgspeed)
+		vali := Helper.Validation(maxspeed, avgspeed, distance)
+		if filedate == "" {
+			currentTime := time.Now()
+			filedate = currentTime.Format("2006-01-02")
+		}
 		activity := r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
 		comment := r.FormValue("comment") //liest den Benutzer-Kommentar
+		switch vali {
+		case "f":
+			activity = "Fahrrad fahren"
+			break
+		case "l":
+			activity = "Laufen"
+			break
+		default:
+			break
+		}
+		//Speichern der Metadaten zu der hochgeladenen Datei
 		empData := [][]string{
-			{"uploaddate", "type", "comment"},
-			{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
+			{"date", "type", "comment", "duration", "distance", "maxspeed", "avgspeed", "standtime"},
+			{filedate, activity, comment, duration.String(), idistance, imaxspeed, iavgspeed, standtime.String()}} //Die Informationen, die gespeichert werden müssen
 		infofile, err := os.Create(datei + ".csv") //Erstellen der Infodatei
 		if err != nil {
 			log.Fatalf("failed creating file: %s", err)
@@ -64,7 +80,7 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		}
 		csvwriter.Flush()
 		infofile.Close()
-		fmt.Println(Helper.CalculateEverything(datei)) //Auslesen der GPX-Datei, muss eventuell verschoben werden, hat hier keinen Sinn
+		fmt.Println(empData)
 		http.Redirect(w, r, "/MainPage", 301)
 	}
 }
