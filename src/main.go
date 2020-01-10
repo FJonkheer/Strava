@@ -14,12 +14,11 @@ import (
 /*
 TODO:
 	- Die Review-Page
-		- Download von GPX/ZIP-Dateien (im Moment noch Ausgabe statt Download)
 		- Löschen von GPX-Dateien (Bestätigung fehlt, der Rest fertig)
-		- Volltextsuche für Kommentare
+		- Sortieren der Einträge nach Datum
 	- Caching
-	- Logging
 	- Tests
+	- Matrikelnummer zu allen src-Dateien hinzufügen (Meine ist: 3736476 ^^)
 
 Error-Handling
 Kommentare
@@ -28,7 +27,7 @@ Optional:
 	- Abfrage ob Datei bereits vorhanden ist beim Upload (überschreibt das vorhandene File, will man das?)
 	- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung (keine weiße Seite nur mit Fehlermeldung)
 	- Upload-Konventionen (Muss ein Kommentar eingegeben werden? Wurde überhaupt eine Datei ausgewählt?)
-	- Berechnung der Geschwindigkeit soll eigentlich über Zeitstempel erfolgen
+	- Volltextsuche für Kommentare (Bessere Ausgabe?)
 */
 
 type Page struct { //Die Struktur einer Website
@@ -59,13 +58,12 @@ func back(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/MainPage", 301) //Zurück zur Startseite
 }
 
+var paths = []string{"ites/Review.html"}
+var t = template.Must(template.New("Review.html").ParseFiles(paths...))
+
 func renderReview(w http.ResponseWriter, r *http.Request) {
 	cookie, _ := r.Cookie(Handler.Uname)
 	user := Helper.Parsecsvtostruct(cookie.Value)
-	paths := []string{
-		"Sites/Review.html",
-	}
-	t := template.Must(template.New("Review.html").ParseFiles(paths...))
 	err := t.Execute(w, user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -2,6 +2,7 @@ package Helper
 
 import (
 	"encoding/csv"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -69,6 +70,7 @@ func ReadCsv(filename string) ([][]string, error) { //Eine CSV-Datei auslesen
 }
 
 func DeleteFiles(path string) error { //Löschen von GPX-Datei und zugehörigen Dateien
+
 	path = strings.Replace(path, ".csv", "", -1)
 	err := os.Remove(path) //Löschen der GPX-Datei
 	if err != nil {
@@ -94,7 +96,12 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 	if exists {
 		path = path + ".zip"
 	}
-	http.ServeFile(w, r, path)
+	file := strings.Split(path, "/")[2]
+	w.Header().Set("Content-Disposition", "attachment; filename="+file)
+	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+	e := strings.NewReader(path)
+	io.Copy(w, e)
+	//http.ServeFile(w, r, path)
 }
 
 func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {

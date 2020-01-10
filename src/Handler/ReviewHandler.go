@@ -76,11 +76,14 @@ func searchcomment(w http.ResponseWriter, r *http.Request) {
 		var files []string
 		csvfiles := Helper.Scanforcsvfiles(path)
 		for _, file := range csvfiles {
-			content, _ := Helper.ReadCsv(file)
+			content, _ := Helper.ReadCsv(path + file)
 			if strings.Contains(content[1][2], comment) {
 				files = append(files, file)
 			}
 		}
-		fmt.Fprintf(w, "<div>%s</div>", files)
+		for _, file := range files {
+			file = strings.Replace(file, ".csv", "", -1)
+			fmt.Fprintf(w, "<div>%s</div><br>", file)
+		}
 	}
 }
