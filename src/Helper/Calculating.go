@@ -87,31 +87,43 @@ func Validation(maxspeed float64, avgspeed float64, distance float64) string {
 
 func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, elev1 float64, elev2 float64) float64 {
 	// SOURCE: https://www.geodatasource.com/developers/go
+	/*
+		const PI float64 = 3.141592653589793
 
-	/*const PI float64 = 3.141592653589793
+		radlat1 := PI * lat1 / 180
+		radlat2 := PI * lat2 / 180
 
-	radlat1 := PI * lat1 / 180
-	radlat2 := PI * lat2 / 180
+		theta := lng1 - lng2
+		radtheta := PI * theta / 180
 
-	theta := lng1 - lng2
-	radtheta := PI * theta / 180
+		dist := math.Sin(radlat1)*math.Sin(radlat2) + math.Cos(radlat1)*math.Cos(radlat2)*math.Cos(radtheta)
 
-	dist := math.Sin(radlat1)*math.Sin(radlat2) + math.Cos(radlat1)*math.Cos(radlat2)*math.Cos(radtheta)
+		if dist > 1 {
+			dist = 1
+		}
 
-	if dist > 1 {
-		dist = 1
-	}
-
-	dist = math.Acos(dist)
-	dist = dist * 180 / PI
-	dist = dist * 60 * 1.1515
-	dist = dist * 1.609344
-	dist = dist * 100
+		dist = math.Acos(dist)
+		dist = dist * 180 / PI
+		dist = dist * 60 * 1.1515
+		dist = dist * 1.609344
+		dist = dist * 100
 	*/
-	x1 := 6371 * math.Cos(lat1) * math.Cos(lng1)
-	y1 := 6371 * math.Cos(lat1) * math.Sin(lng1)
-	x2 := 6371 * math.Cos(lat2) * math.Cos(lng2)
-	y2 := 6371 * math.Cos(lat2) * math.Sin(lng2)
-	distance := math.Sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (elev2-elev1)*(elev2-elev1))
-	return distance
+	/*
+		x1 := 6371 * math.Cos(lat1) * math.Cos(lng1)
+		y1 := 6371 * math.Cos(lat1) * math.Sin(lng1)
+		x2 := 6371 * math.Cos(lat2) * math.Cos(lng2)
+		y2 := 6371 * math.Cos(lat2) * math.Sin(lng2)
+		distance := math.Sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (elev2-elev1)*(elev2-elev1))
+		return distance
+	*/
+	const PI float64 = 3.141592653589793
+	var R = 6378.137 // Radius of earth in KM
+	var dLat = lat2*PI/180 - lat1*PI/180
+	var dLon = lng2*PI/180 - lng1*PI/180
+	var a = math.Sin(dLat/2)*math.Sin(dLat/2) +
+		math.Cos(lat1*PI/180)*math.Cos(lat2*PI/180)*
+			math.Sin(dLon/2)*math.Sin(dLon/2)
+	var c = 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+	var d = R * c
+	return d * 1000 // meters
 }
