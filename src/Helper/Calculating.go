@@ -35,15 +35,17 @@ func calculateSpeed(Run Metadata) (float64, float64, time.Duration) {
 	for i := 0; i < len(Run.Trackpoints)-1; i++ {
 		Time, _ := time.Parse("15:04:05.000", Run.Trackpoints[i].Time)
 		Time2, _ := time.Parse("15:04:05.000", Run.Trackpoints[i+1].Time)
-		Long, _ := strconv.ParseFloat(Run.Trackpoints[i].Longitude, 32)
+		timediff := Time2.Sub(Time)
+		/*Long, _ := strconv.ParseFloat(Run.Trackpoints[i].Longitude, 32)
 		Long2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Longitude, 32)
 		Lat, _ := strconv.ParseFloat(Run.Trackpoints[i].Latitude, 32)
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
 		distance := latlongtodistance(Lat, Long, Lat2, Long2)
-		timediff := Time2.Sub(Time)
 		distance = math.Sqrt(distance * distance)
 		speed := distance / timediff.Seconds()
 		speed = speed * 3.6
+		*/
+		speed, _ := strconv.ParseFloat(Run.Trackpoints[i].Speed, 32)
 		if speed > 1.0 {
 			avgspeed += speed
 			count += 1.0

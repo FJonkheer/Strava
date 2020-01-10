@@ -18,7 +18,6 @@ TODO:
 		- Löschen von GPX-Dateien (evtl.fertig) (Bestätigung fehlt)
 		- Die Verarbeitung der .gpx-Dateien
 		- Art der Aktivität und Kommentar müssen bearbeitet werden können
-	- Ordner pro hochladenem Nutzer erstellen und Dateien dort abspeichern
 	- Abfrage ob Datei bereits vorhanden ist beim Upload (überschreibt das vorhandene File, will man das?)
 	- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung (keine weiße Seite nur mit Fehlermeldung)
 	- Upload-Konventionen (Muss ein Kommentar eingegeben werden? Wurde überhaupt eine Datei ausgewählt?)

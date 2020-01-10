@@ -13,6 +13,7 @@ type trkpt struct {
 	Latitude  string `xml:"lat,attr"`
 	Longitude string `xml:"lon,attr"`
 	Time      string `xml:"time"`
+	Speed     string `xml:"extensions>TrackPointExtension>speed"`
 }
 
 //Metadaten und alle Trackpoints der gpx-Datei
