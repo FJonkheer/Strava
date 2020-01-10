@@ -2,10 +2,8 @@ package Handler
 
 import (
 	"Helper"
-	"html/template"
 	"net/http"
-	"os"
-	"reflect"
+	"strings"
 )
 
 func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer Datei
@@ -43,11 +41,26 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoP
 		path := "Files/" + Uname    //Benutzername muss abgefragt werden
 		file := r.FormValue("File") //Das Feld, wo die Datei ausgewählt wurde
 		path = path + file
-		Helper.ChangeInfoFile(w, r, path)
+		//Helper.ChangeInfoFile(w, r, path)
 		http.Redirect(w, r, "/Review", 301)
 	}
 }
 
+func Searchcomment(w http.ResponseWriter, r *http.Request) {
+	path := "Files/" + Uname
+	comment := r.FormValue("comment")
+	var files []string
+	csvfiles := Helper.Scanforcsvfiles(path)
+	for _, file := range csvfiles {
+		content, _ := Helper.ReadCsv(file)
+		if strings.Contains(content[1][2], comment) {
+			files = append(files, file)
+		}
+	}
+
+}
+
+/*
 //Hier wird noch ausprobiert
 //die Review-Page muss wahrscheinlich über so ein Template-Zeug gemacht werden
 
@@ -108,3 +121,4 @@ func RangeStructer(args ...interface{}) []interface{} {
 
 	return out
 }
+*/

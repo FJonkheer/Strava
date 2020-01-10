@@ -2,10 +2,27 @@ package Helper
 
 import (
 	"encoding/csv"
-	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
+
+type File struct {
+	filename  string
+	filedate  string
+	activity  string
+	comment   string
+	duration  string
+	distance  string
+	maxspeed  string
+	avgspeed  string
+	standtime string
+}
+
+type UserFiles struct {
+	username string
+	files    []File
+}
 
 func FileExists(filename string) bool { //Abfrage, ob eine Datei bereits existiert
 	info, err := os.Stat(filename)
@@ -75,8 +92,8 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 	http.ServeFile(w, r, path)
 }
 
-func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
-	path := "Files/Username/" //Benutzernamenabfrage
+/*func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
+	path := "Files/" + Handler.Uname //Benutzernamenabfrage
 	//Speichern der Metadaten zu der hochgeladenen Datei
 	content, err := ReadCsv(path + file)
 
@@ -97,4 +114,43 @@ func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
 	csvwriter.Flush()
 	infofile.Close()
 	http.Redirect(w, r, "/Review", 301)
+}
+*/
+
+func Scanforcsvfiles(path string) []string {
+	var files []string
+	var csvfiles []string
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		files = append(files, path)
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
+	for _, file := range files {
+		if filepath.Ext(file) == ".csv" {
+			csvfiles = append(csvfiles, file)
+		}
+	}
+	return csvfiles
+}
+
+func Parsecsvtostruct(username string) UserFiles {
+	var user UserFiles
+	user.username = username
+	path := "/Files/" + username + "/"
+	csvfiles := Scanforcsvfiles(path)
+	for i, file := range csvfiles {
+		content, _ := ReadCsv(file)
+		user.files[i].filename = file
+		user.files[i].filedate = content[1][0]
+		user.files[i].activity = content[1][1]
+		user.files[i].comment = content[1][2]
+		user.files[i].duration = content[1][3]
+		user.files[i].distance = content[1][4]
+		user.files[i].maxspeed = content[1][5]
+		user.files[i].avgspeed = content[1][6]
+		user.files[i].standtime = content[1][7]
+	}
+	return user
 }

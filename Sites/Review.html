@@ -5,8 +5,35 @@
     <title>Review Page</title>
 </head>
 <body>
-<h1>Review Page:</h1>
-<h2>irgendwie die Daten anzeigen</h2>
+<h1>Review Page from user: {{ .username }}</h1>
+<table>
+    <tr>
+        <td>filename</td>
+        <td>filedate</td>
+        <td>activity-type</td>
+        <td>comment</td>
+        <td>duration</td>
+        <td>distance</td>
+        <td>maxspeed</td>
+        <td>avgspeed</td>
+        <td>standtime</td>
+    </tr>
+    {{ with .List }}
+                    {{ range . }}
+                    <tr>
+                        <td>{{ .filename }}</td>
+                        <td>{{ .filedate }}</td>
+                        <td>{{ .activity }}</td>
+                        <td>{{ .comment }}</td>
+                        <td>{{ .duration }}</td>
+                        <td>{{ .distance }}</td>
+                        <td>{{ .maxspeed }}</td>
+                        <td>{{ .avgspeed }}</td>
+                        <td>{{ .standtime }}</td>
+                    </tr>
+                    {{ end }}
+    {{ end }}
+</table>
 <form method="post" enctype="multipart/form-data" action="back.php">
     <input name="back" type="submit" value="Back to MainPage"/>
 </form>

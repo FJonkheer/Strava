@@ -2,8 +2,10 @@ package main
 
 import (
 	"Handler"
+	"Helper"
 	"flag"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,22 +18,28 @@ TODO:
 		- Anzeige der gespeicherten Informationen zu jeder GPX-Datei!!
 		- Download von GPX/ZIP-Dateien (evtl.fertig)
 		- Löschen von GPX-Dateien (evtl.fertig) (Bestätigung fehlt)
-		- Die Verarbeitung der .gpx-Dateien
 		- Art der Aktivität und Kommentar müssen bearbeitet werden können
-	- Abfrage ob Datei bereits vorhanden ist beim Upload (überschreibt das vorhandene File, will man das?)
-	- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung (keine weiße Seite nur mit Fehlermeldung)
-	- Upload-Konventionen (Muss ein Kommentar eingegeben werden? Wurde überhaupt eine Datei ausgewählt?)
+		- Volltextsuche für Kommentare (teilweise fertig, nicht implementiert oder getestet)
+	- Caching
 	- Logging
 	- Tests
 
 Error-Handling
 Kommentare
+
+Optional:
+	- Abfrage ob Datei bereits vorhanden ist beim Upload (überschreibt das vorhandene File, will man das?)
+	- Bei Fehler im Einloggen - zurück zum Einloggen mit Fehlermeldung (keine weiße Seite nur mit Fehlermeldung)
+	- Upload-Konventionen (Muss ein Kommentar eingegeben werden? Wurde überhaupt eine Datei ausgewählt?)
+	- Berechnung der Geschwindigkeit soll eigentlich über Zeitstempel erfolgen
 */
 
 type Page struct { //Die Struktur einer Website
 	Title string
 	Body  []byte
 }
+
+//var templates = template.Must(template.ParseFiles("Review.html"))
 
 func loadPage(title string) (*Page, error) {
 	filename := title + ".html"
@@ -56,6 +64,26 @@ func back(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/MainPage", 301) //Zurück zur Startseite
 }
 
+/*
+func reviewHandler(w http.ResponseWriter, r *http.Request) {
+	p, _ := loadPage("Review")
+	renderReview(w, p)
+}
+*/
+
+func renderReview(w http.ResponseWriter, r *http.Request) {
+	//err := templates.ExecuteTemplate(w, "Review.html", p)
+	user := Helper.Parsecsvtostruct(Handler.Uname)
+	paths := []string{
+		"Sites/Review.html",
+	}
+	t := template.Must(template.New("Review.html").ParseFiles(paths...))
+	err := t.Execute(w, user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func main() {
 	portFlag := flag.String("port", ":9090", "choose Port")
 	flag.Parse()
@@ -67,6 +95,6 @@ func main() {
 	http.HandleFunc("/download.php", Handler.DownloadHandler) //Download einer Datei
 	http.HandleFunc("/delete.php", Handler.DeleteHandler)     //Löschen von Dateien
 	http.HandleFunc("/change.php", Handler.ChangeHandler)     //Ändern der InfoDatei
-	http.HandleFunc("/Review", Handler.Reviewer)
+	http.HandleFunc("/Review", renderReview)
 	log.Fatal(http.ListenAndServeTLS(*portFlag, "src/Auth/cert.pem", "src/Auth/key.pem", nil)) //der "Webserver"
 }
