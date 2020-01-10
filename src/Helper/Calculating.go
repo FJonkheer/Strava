@@ -60,6 +60,16 @@ func calculateSpeed(Run Metadata) (float64, float64, time.Duration) {
 	return maxspeed, avgspeed, standtime
 }
 
+func Validation(maxspeed float64, avgspeed float64, distance float64) string {
+	if maxspeed >= 20.0 && distance > 1.0 || avgspeed > 15.0 && distance > 2.0 {
+		return "f"
+	} else if maxspeed <= 7.0 && distance > 2.0 || avgspeed < 4.0 && distance > 1.0 {
+		return "l"
+	} else {
+		return "x"
+	}
+}
+
 // SOURCE: https://www.geodatasource.com/developers/go
 func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) float64 {
 	const PI float64 = 3.141592653589793
