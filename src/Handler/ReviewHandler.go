@@ -6,7 +6,23 @@ import (
 	"strings"
 )
 
-func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer Datei
+func HandleReview(w http.ResponseWriter, r *http.Request) {
+	switch r.FormValue("review") {
+	case "Delete Record":
+		deleteHandler(w, r)
+		break
+	case "Search":
+		searchcomment(w, r)
+		break
+	case "Change Info":
+		changeHandler(w, r)
+		break
+	default:
+		downloadHandler(w, r)
+		break
+	}
+}
+func downloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer Datei
 	cookie, _ := r.Cookie(Uname)
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
@@ -19,7 +35,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer 
 	}
 }
 
-func DeleteHandler(w http.ResponseWriter, r *http.Request) { //Löschen eines Eintrags
+func deleteHandler(w http.ResponseWriter, r *http.Request) { //Löschen eines Eintrags
 	//TODO: Abfrage ob wirklich gelöscht werden soll
 	cookie, _ := r.Cookie(Uname)
 	if cookie == nil {
@@ -33,7 +49,7 @@ func DeleteHandler(w http.ResponseWriter, r *http.Request) { //Löschen eines Ei
 	}
 }
 
-func ChangeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoPage
+func changeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoPage
 	cookie, _ := r.Cookie(Uname)
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
@@ -46,7 +62,7 @@ func ChangeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoP
 	}
 }
 
-func Searchcomment(w http.ResponseWriter, r *http.Request) {
+func searchcomment(w http.ResponseWriter, r *http.Request) {
 	path := "Files/" + Uname
 	comment := r.FormValue("comment")
 	var files []string

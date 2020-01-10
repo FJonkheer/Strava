@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Review Page from user: {{ .Username }}</h1>
-<table>
+<table id="table" class="display" style="width:100%">
     <tr>
         <td>filename</td>
         <td>filedate</td>
@@ -34,11 +34,23 @@
                     {{ end }}
     {{ end }}
 </table>
+
 <form method="post" enctype="multipart/form-data" action="review.php">
-    <input name="review" type="submit" value="Back to MainPage"/>
-</form>
-<form method="post" enctype="multipart/form-data" action="back.php">
-    <input name="back" type="submit" value="Back to MainPage"/>
-</form>
+    <form action="review.php" enctype="multipart/form-data" method="post">
+        <p><br /> <br /><input name="review" type="submit" value="Delete Record" /></p>
+        <p><input name="review" type="submit" value="Download" /></p>
+        <p> </p>
+        Kommentar: 
+        <input name="searchcomment" type="text" /><br />
+        <p><input name="review" type="submit" value="Search" /></p>
+        <p> </p>
+        Aktivität:   
+        <select name="types">
+            <option>Laufen</option>
+            <option>Fahrrad fahren</option>
+        </select><br /><br />Kommentar:    <input name="comment" type="text" /><br />
+        <p><input name="review" type="submit" value="Change Info" /></p>
+        <p> </p>
+    </form><form action="back.php" enctype="multipart/form-data" method="post"><input name="back" type="submit" value="Back to MainPage" /></form>
 </body>
 </html>

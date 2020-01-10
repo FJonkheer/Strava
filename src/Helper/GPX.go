@@ -12,6 +12,7 @@ import (
 type trkpt struct {
 	Latitude  string `xml:"lat,attr"`
 	Longitude string `xml:"lon,attr"`
+	Elevation string `xml:"ele"`
 	Time      string `xml:"time"`
 	Speed     string `xml:"extensions>TrackPointExtension>speed"`
 }

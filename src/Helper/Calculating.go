@@ -31,7 +31,9 @@ func calculateDistance(Run Metadata) float64 {
 		Long2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Longitude, 32)
 		Lat, _ := strconv.ParseFloat(Run.Trackpoints[i].Latitude, 32)
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
-		dist := latlongtodistance(Lat, Long, Lat2, Long2)
+		Elev1, _ := strconv.ParseFloat(Run.Trackpoints[i].Elevation, 32)
+		Elev2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Elevation, 32)
+		dist := latlongtodistance(Lat, Long, Lat2, Long2, Elev1, Elev2)
 		totaldistance += dist
 	}
 	totaldistance = totaldistance / 1000
@@ -47,16 +49,17 @@ func calculateSpeed(Run Metadata) (time.Duration, float64, float64, time.Duratio
 		Time, _ := time.Parse("15:04:05.000", Run.Trackpoints[i].Time)
 		Time2, _ := time.Parse("15:04:05.000", Run.Trackpoints[i+1].Time)
 		timediff := Time2.Sub(Time)
-		/*Long, _ := strconv.ParseFloat(Run.Trackpoints[i].Longitude, 32)
+		Long, _ := strconv.ParseFloat(Run.Trackpoints[i].Longitude, 32)
 		Long2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Longitude, 32)
 		Lat, _ := strconv.ParseFloat(Run.Trackpoints[i].Latitude, 32)
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
-		distance := latlongtodistance(Lat, Long, Lat2, Long2)
-		distance = math.Sqrt(distance * distance)
+		Elev1, _ := strconv.ParseFloat(Run.Trackpoints[i].Elevation, 32)
+		Elev2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Elevation, 32)
+		distance := latlongtodistance(Lat, Long, Lat2, Long2, Elev1, Elev2)
 		speed := distance / timediff.Seconds()
 		speed = speed * 3.6
-		*/
-		speed, _ := strconv.ParseFloat(Run.Trackpoints[i].Speed, 32)
+
+		//speed, _ := strconv.ParseFloat(Run.Trackpoints[i].Speed, 32)
 		if speed > 1.0 {
 			avgspeed += speed
 			count += 1.0
@@ -82,9 +85,10 @@ func Validation(maxspeed float64, avgspeed float64, distance float64) string {
 	}
 }
 
-// SOURCE: https://www.geodatasource.com/developers/go
-func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) float64 {
-	const PI float64 = 3.141592653589793
+func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, elev1 float64, elev2 float64) float64 {
+	// SOURCE: https://www.geodatasource.com/developers/go
+
+	/*const PI float64 = 3.141592653589793
 
 	radlat1 := PI * lat1 / 180
 	radlat2 := PI * lat2 / 180
@@ -103,6 +107,11 @@ func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) f
 	dist = dist * 60 * 1.1515
 	dist = dist * 1.609344
 	dist = dist * 100
-
-	return dist
+	*/
+	x1 := 6371 * math.Cos(lat1) * math.Cos(lng1)
+	y1 := 6371 * math.Cos(lat1) * math.Sin(lng1)
+	x2 := 6371 * math.Cos(lat2) * math.Cos(lng2)
+	y2 := 6371 * math.Cos(lat2) * math.Sin(lng2)
+	distance := math.Sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (elev2-elev1)*(elev2-elev1))
+	return distance
 }

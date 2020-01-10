@@ -78,14 +78,12 @@ func renderReview(w http.ResponseWriter, r *http.Request) {
 func main() {
 	portFlag := flag.String("port", ":9090", "choose Port")
 	flag.Parse()
-	http.HandleFunc("/", handler)                             //der generelle Seitenaufruf
-	http.HandleFunc("/submit.php", Handler.Handling)          //der Login-Aufruf
-	http.HandleFunc("/redirect.php", Handler.Redirecting)     //die Weiterleitung von der Startseite
-	http.HandleFunc("/back.php", back)                        //das Zurückleiten auf die MainPage
-	http.HandleFunc("/upload.php", Handler.Uploader)          //der Dateiupload
-	http.HandleFunc("/download.php", Handler.DownloadHandler) //Download einer Datei
-	http.HandleFunc("/delete.php", Handler.DeleteHandler)     //Löschen von Dateien
-	http.HandleFunc("/change.php", Handler.ChangeHandler)     //Ändern der InfoDatei
+	http.HandleFunc("/", handler)                         //der generelle Seitenaufruf
+	http.HandleFunc("/submit.php", Handler.Handling)      //der Login-Aufruf
+	http.HandleFunc("/redirect.php", Handler.Redirecting) //die Weiterleitung von der Startseite
+	http.HandleFunc("/back.php", back)                    //das Zurückleiten auf die MainPage
+	http.HandleFunc("/upload.php", Handler.Uploader)      //der Dateiupload
+	http.HandleFunc("/review.php", Handler.HandleReview)
 	http.HandleFunc("/Review", renderReview)
 	log.Fatal(http.ListenAndServeTLS(*portFlag, "src/Auth/cert.pem", "src/Auth/key.pem", nil)) //der "Webserver"
 }
