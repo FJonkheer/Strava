@@ -3,9 +3,11 @@ package Helper
 import (
 	"encoding/csv"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type File struct {
@@ -67,6 +69,7 @@ func ReadCsv(filename string) ([][]string, error) { //Eine CSV-Datei auslesen
 }
 
 func DeleteFiles(path string) error { //Löschen von GPX-Datei und zugehörigen Dateien
+	path = strings.Replace(path, ".csv", "", -1)
 	err := os.Remove(path) //Löschen der GPX-Datei
 	if err != nil {
 		return err
@@ -86,6 +89,7 @@ func DeleteFiles(path string) error { //Löschen von GPX-Datei und zugehörigen 
 }
 
 func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herunterladen einer Datei
+	path = strings.Replace(path, ".csv", "", -1)
 	exists := FileExists(path + ".zip") //Falls eine zugehörige ZIP existiert, soll diese heruntergeladen werden
 	if exists {
 		path = path + ".zip"
@@ -93,18 +97,22 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 	http.ServeFile(w, r, path)
 }
 
-/*func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
-	path := "Files/" + Handler.Uname //Benutzernamenabfrage
+func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
 	//Speichern der Metadaten zu der hochgeladenen Datei
-	content, err := ReadCsv(path + file)
-
-	date := content[1][0]
-	activity := r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
-	comment := r.FormValue("comment") //liest den Benutzer-Kommentar
+	content, err := ReadCsv(file)
+	var onefile File
+	onefile.Filedate = content[1][0]
+	onefile.Duration = content[1][3]
+	onefile.Distance = content[1][4]
+	onefile.Maxspeed = content[1][5]
+	onefile.Avgspeed = content[1][6]
+	onefile.Standtime = content[1][7]
+	onefile.Activity = r.FormValue("types")  //liest den Aktivitätstypen aus dem http-Request
+	onefile.Comment = r.FormValue("comment") //liest den Benutzer-Kommentar
 	empData := [][]string{
-		{"uploaddate", "type", "comment"},
-		{date, activity, comment}} //Die Informationen, die gespeichert werden müssen
-	infofile, err := os.Create(path + file + ".csv") //Erstellen der Infodatei
+		{"date", "type", "comment", "duration", "distance", "maxspeed", "avgspeed", "standtime"},
+		{onefile.Filedate, onefile.Activity, onefile.Comment, onefile.Duration, onefile.Distance, onefile.Maxspeed, onefile.Avgspeed, onefile.Standtime}} //Die Informationen, die gespeichert werden müssen
+	infofile, err := os.Create(file) //Erstellen der Infodatei
 	if err != nil {
 		log.Fatalf("failed creating file: %s", err)
 	}
@@ -116,7 +124,6 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 	infofile.Close()
 	http.Redirect(w, r, "/Review", 301)
 }
-*/
 
 func Scanforcsvfiles(path string) []string {
 	var csvfiles []string
@@ -155,4 +162,16 @@ func Parsecsvtostruct(username string) UserFiles {
 		user.Files = append(user.Files, onefile)
 	}
 	return user
+}
+
+func GetfileName(r *http.Request) string {
+	r.ParseForm()
+	file := ""
+	for key, _ := range r.Form {
+		if strings.Contains(key, ".gpx") {
+			file = key
+			break
+		}
+	}
+	return file
 }

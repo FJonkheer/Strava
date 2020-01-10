@@ -107,6 +107,8 @@ func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, e
 		dist = dist * 60 * 1.1515
 		dist = dist * 1.609344
 		dist = dist * 100
+
+		return dist
 	*/
 	/*
 		x1 := 6371 * math.Cos(lat1) * math.Cos(lng1)

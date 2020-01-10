@@ -14,12 +14,9 @@ import (
 /*
 TODO:
 	- Die Review-Page
-		- Anzeige der GPX-Dateien!!
-		- Anzeige der gespeicherten Informationen zu jeder GPX-Datei!!
-		- Download von GPX/ZIP-Dateien (evtl.fertig)
-		- Löschen von GPX-Dateien (evtl.fertig) (Bestätigung fehlt)
-		- Art der Aktivität und Kommentar müssen bearbeitet werden können
-		- Volltextsuche für Kommentare (teilweise fertig, nicht implementiert oder getestet)
+		- Download von GPX/ZIP-Dateien (im Moment noch Ausgabe statt Download)
+		- Löschen von GPX-Dateien (Bestätigung fehlt, der Rest fertig)
+		- Volltextsuche für Kommentare
 	- Caching
 	- Logging
 	- Tests

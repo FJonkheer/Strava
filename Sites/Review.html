@@ -6,8 +6,10 @@
 </head>
 <body>
 <h1>Review Page from user: {{ .Username }}</h1>
+<form method="post" enctype="multipart/form-data" action="review.php">
 <table id="table" class="display" style="width:100%">
     <tr>
+        <td>check</td>
         <td>filename</td>
         <td>filedate</td>
         <td>activity-type</td>
@@ -21,6 +23,7 @@
     {{ with .Files }}
                     {{ range . }}
                     <tr>
+                        <td><input type="radio" name={{  .Filename }}></td>
                         <td>{{ .Filename }}</td>
                         <td>{{ .Filedate }}</td>
                         <td>{{ .Activity }}</td>
@@ -34,23 +37,21 @@
                     {{ end }}
     {{ end }}
 </table>
-
-<form method="post" enctype="multipart/form-data" action="review.php">
-    <form action="review.php" enctype="multipart/form-data" method="post">
-        <p><br /> <br /><input name="review" type="submit" value="Delete Record" /></p>
-        <p><input name="review" type="submit" value="Download" /></p>
-        <p> </p>
-        Kommentar: 
-        <input name="searchcomment" type="text" /><br />
-        <p><input name="review" type="submit" value="Search" /></p>
-        <p> </p>
-        Aktivität:   
-        <select name="types">
-            <option>Laufen</option>
-            <option>Fahrrad fahren</option>
-        </select><br /><br />Kommentar:    <input name="comment" type="text" /><br />
-        <p><input name="review" type="submit" value="Change Info" /></p>
-        <p> </p>
-    </form><form action="back.php" enctype="multipart/form-data" method="post"><input name="back" type="submit" value="Back to MainPage" /></form>
+    <p><br /> <br /><input name="review" type="submit" value="Delete Record" /></p>
+    <p><input name="review" type="submit" value="Download" /></p>
+    <p> </p>
+    Kommentar: 
+    <input name="searchcomment" type="text" /><br />
+    <p><input name="review" type="submit" value="Search" /></p>
+    <p> </p>
+    Aktivität:   
+    <select name="types">
+        <option>Laufen</option>
+        <option>Fahrrad fahren</option>
+    </select><br /><br />Kommentar:    <input name="comment" type="text" /><br />
+    <p><input name="review" type="submit" value="Change Info" /></p>
+    <p> </p>
+</form>
+<form action="back.php" enctype="multipart/form-data" method="post"><input name="back" type="submit" value="Back to MainPage" /></form>
 </body>
 </html>
