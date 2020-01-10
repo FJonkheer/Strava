@@ -39,8 +39,6 @@ type Page struct { //Die Struktur einer Website
 	Body  []byte
 }
 
-//var templates = template.Must(template.ParseFiles("Review.html"))
-
 func loadPage(title string) (*Page, error) {
 	filename := title + ".html"
 	body, err := ioutil.ReadFile("Sites/" + filename) //liest den body der aufzurufenden Seite aus
@@ -64,15 +62,7 @@ func back(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/MainPage", 301) //Zurück zur Startseite
 }
 
-/*
-func reviewHandler(w http.ResponseWriter, r *http.Request) {
-	p, _ := loadPage("Review")
-	renderReview(w, p)
-}
-*/
-
 func renderReview(w http.ResponseWriter, r *http.Request) {
-	//err := templates.ExecuteTemplate(w, "Review.html", p)
 	user := Helper.Parsecsvtostruct(Handler.Uname)
 	paths := []string{
 		"Sites/Review.html",

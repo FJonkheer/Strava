@@ -8,20 +8,20 @@ import (
 )
 
 type File struct {
-	filename  string
-	filedate  string
-	activity  string
-	comment   string
-	duration  string
-	distance  string
-	maxspeed  string
-	avgspeed  string
-	standtime string
+	Filename  string
+	Filedate  string
+	Activity  string
+	Comment   string
+	Duration  string
+	Distance  string
+	Maxspeed  string
+	Avgspeed  string
+	Standtime string
 }
 
 type UserFiles struct {
-	username string
-	files    []File
+	Username string
+	Files    []File
 }
 
 func FileExists(filename string) bool { //Abfrage, ob eine Datei bereits existiert
@@ -137,20 +137,20 @@ func Scanforcsvfiles(path string) []string {
 
 func Parsecsvtostruct(username string) UserFiles {
 	var user UserFiles
-	user.username = username
+	user.Username = username
 	path := "/Files/" + username + "/"
 	csvfiles := Scanforcsvfiles(path)
 	for i, file := range csvfiles {
 		content, _ := ReadCsv(file)
-		user.files[i].filename = file
-		user.files[i].filedate = content[1][0]
-		user.files[i].activity = content[1][1]
-		user.files[i].comment = content[1][2]
-		user.files[i].duration = content[1][3]
-		user.files[i].distance = content[1][4]
-		user.files[i].maxspeed = content[1][5]
-		user.files[i].avgspeed = content[1][6]
-		user.files[i].standtime = content[1][7]
+		user.Files[i].Filename = file
+		user.Files[i].Filedate = content[1][0]
+		user.Files[i].Activity = content[1][1]
+		user.Files[i].Comment = content[1][2]
+		user.Files[i].Duration = content[1][3]
+		user.Files[i].Distance = content[1][4]
+		user.Files[i].Maxspeed = content[1][5]
+		user.Files[i].Avgspeed = content[1][6]
+		user.Files[i].Standtime = content[1][7]
 	}
 	return user
 }

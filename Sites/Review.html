@@ -5,7 +5,7 @@
     <title>Review Page</title>
 </head>
 <body>
-<h1>Review Page from user: {{ .username }}</h1>
+<h1>Review Page from user: {{ .Username }}</h1>
 <table>
     <tr>
         <td>filename</td>
@@ -18,18 +18,18 @@
         <td>avgspeed</td>
         <td>standtime</td>
     </tr>
-    {{ with .List }}
+    {{ with .Files }}
                     {{ range . }}
                     <tr>
-                        <td>{{ .filename }}</td>
-                        <td>{{ .filedate }}</td>
-                        <td>{{ .activity }}</td>
-                        <td>{{ .comment }}</td>
-                        <td>{{ .duration }}</td>
-                        <td>{{ .distance }}</td>
-                        <td>{{ .maxspeed }}</td>
-                        <td>{{ .avgspeed }}</td>
-                        <td>{{ .standtime }}</td>
+                        <td>{{ .Filename }}</td>
+                        <td>{{ .Filedate }}</td>
+                        <td>{{ .Activity }}</td>
+                        <td>{{ .Comment }}</td>
+                        <td>{{ .Duration }}</td>
+                        <td>{{ .Distance }}</td>
+                        <td>{{ .Maxspeed }}</td>
+                        <td>{{ .Avgspeed }}</td>
+                        <td>{{ .Standtime }}</td>
                     </tr>
                     {{ end }}
     {{ end }}
