@@ -2,6 +2,7 @@ package Helper
 
 import (
 	"encoding/csv"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -118,18 +119,18 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 */
 
 func Scanforcsvfiles(path string) []string {
-	var files []string
 	var csvfiles []string
-	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		files = append(files, path)
+	/*err := filepath.Walk(path, func(filepath string, info os.FileInfo, err error) error {
+		files = append(files, filepath)
 		return nil
-	})
+	})*/
+	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		panic(err)
 	}
 	for _, file := range files {
-		if filepath.Ext(file) == ".csv" {
-			csvfiles = append(csvfiles, file)
+		if filepath.Ext(file.Name()) == ".csv" {
+			csvfiles = append(csvfiles, file.Name())
 		}
 	}
 	return csvfiles
@@ -137,20 +138,21 @@ func Scanforcsvfiles(path string) []string {
 
 func Parsecsvtostruct(username string) UserFiles {
 	var user UserFiles
-	user.Username = username
-	path := "/Files/" + username + "/"
+	path := "Files/" + username
 	csvfiles := Scanforcsvfiles(path)
-	for i, file := range csvfiles {
-		content, _ := ReadCsv(file)
-		user.Files[i].Filename = file
-		user.Files[i].Filedate = content[1][0]
-		user.Files[i].Activity = content[1][1]
-		user.Files[i].Comment = content[1][2]
-		user.Files[i].Duration = content[1][3]
-		user.Files[i].Distance = content[1][4]
-		user.Files[i].Maxspeed = content[1][5]
-		user.Files[i].Avgspeed = content[1][6]
-		user.Files[i].Standtime = content[1][7]
+	var onefile File
+	for _, file := range csvfiles {
+		content, _ := ReadCsv(path + "/" + file)
+		onefile.Filename = file
+		onefile.Filedate = content[1][0]
+		onefile.Activity = content[1][1]
+		onefile.Comment = content[1][2]
+		onefile.Duration = content[1][3]
+		onefile.Distance = content[1][4]
+		onefile.Maxspeed = content[1][5]
+		onefile.Avgspeed = content[1][6]
+		onefile.Standtime = content[1][7]
+		user.Files = append(user.Files, onefile)
 	}
 	return user
 }

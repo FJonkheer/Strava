@@ -63,7 +63,8 @@ func back(w http.ResponseWriter, r *http.Request) {
 }
 
 func renderReview(w http.ResponseWriter, r *http.Request) {
-	user := Helper.Parsecsvtostruct(Handler.Uname)
+	cookie, _ := r.Cookie(Handler.Uname)
+	user := Helper.Parsecsvtostruct(cookie.Value)
 	paths := []string{
 		"Sites/Review.html",
 	}
