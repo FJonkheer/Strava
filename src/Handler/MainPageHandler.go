@@ -5,7 +5,7 @@ import (
 )
 
 func Redirecting(w http.ResponseWriter, r *http.Request) { //Weiterleiten auf Upload oder Review
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
@@ -18,7 +18,8 @@ func Redirecting(w http.ResponseWriter, r *http.Request) { //Weiterleiten auf Up
 }
 
 func upload(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(Uname)
+
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
@@ -27,11 +28,10 @@ func upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func review(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-
 		http.Redirect(w, r, "/Review", 301) //Review-Seite
 	}
 }

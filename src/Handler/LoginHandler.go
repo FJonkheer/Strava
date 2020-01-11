@@ -2,8 +2,11 @@ package Handler
 
 import (
 	"Helper"
+	"crypto/rand"
+	"encoding/base64"
 	"encoding/csv"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -84,8 +87,9 @@ func register(w http.ResponseWriter, r *http.Request) {
 			csvwriter.Flush()
 			csvFile.Close()
 			expiration := time.Now().Add(365 * 24 * time.Hour)
-			cookie := http.Cookie{Name: Uname, Value: "LoggedIn", Expires: expiration}
+			cookie := http.Cookie{Name: "Test", Value: Uname, Expires: expiration}
 			http.SetCookie(w, &cookie)
+
 		}
 	} else {
 		fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
@@ -94,16 +98,19 @@ func register(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	c := http.Cookie{
-		Name:    Uname,
-		Value:   "test",
-		Path:    "/",
-		Expires: time.Now(),
+	http.SetCookie(w, &http.Cookie{
+		Name:    "Test",
 		MaxAge:  -1,
-
-		HttpOnly: true}
-	http.SetCookie(w, &c)
+		Expires: time.Now().Add(-100 * time.Hour), // Set expires for older versions of IE
+		Path:    "/"})
 	http.Redirect(w, r, "/Login", 301)
+}
+func sessionId() string {
+	b := make([]byte, 32)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil {
+		return ""
+	}
+	return base64.URLEncoding.EncodeToString(b)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -126,8 +133,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 					password: line[1],
 				}
 				if data.username == Uname && data.password == pword { //Wenn es eine passende User/Passwort-Kombination gibt
-					expiration := time.Now().Add(365 * 24 * time.Hour)
-					cookie := http.Cookie{Name: Uname, Value: Uname, Expires: expiration}
+					expiration := time.Now().Add(24 * time.Hour)
+					cookie := http.Cookie{Name: "Test", Value: Uname, Expires: expiration}
 					http.SetCookie(w, &cookie)
 					http.Redirect(w, r, "/MainPage", 301) //Wird auf die Startseite weitergeleitet
 				}

@@ -81,5 +81,6 @@ func main() {
 	http.HandleFunc("/upload.php", Handler.Uploader)      //der Dateiupload
 	http.HandleFunc("/review.php", Handler.HandleReview)
 	http.HandleFunc("/Review", renderReview)
+	http.HandleFunc("/logout.php", Handler.Logout)
 	log.Fatal(http.ListenAndServeTLS(*portFlag, "src/Auth/cert.pem", "src/Auth/key.pem", nil)) //der "Webserver"
 }

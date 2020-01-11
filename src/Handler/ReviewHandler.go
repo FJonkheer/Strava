@@ -8,7 +8,7 @@ import (
 )
 
 func HandleReview(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
@@ -28,13 +28,12 @@ func HandleReview(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-
 func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer Datei
-
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
+
 		path := "Files/" + cookie.Value //Benutzername muss abgefragt werden
 		file := Helper.GetfileName(r)   //Das Feld, wo die Datei ausgewählt wurde
 		path = path + "/" + file
@@ -46,7 +45,7 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer 
 //Löschen eines Eintrags
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO: Abfrage ob wirklich gelöscht werden soll
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
@@ -59,10 +58,11 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func changeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoPage
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
+
 		path := "Files/" + cookie.Value + "/" //Benutzername muss abgefragt werden
 		file := Helper.GetfileName(r)
 		path = path + file
@@ -72,7 +72,7 @@ func changeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoP
 }
 
 func searchcomment(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie(Uname)
+	cookie, _ := r.Cookie("Test")
 	if cookie == nil {
 		http.Redirect(w, r, "/Login", 301)
 	} else {

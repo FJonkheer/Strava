@@ -29,6 +29,7 @@ func LoginTest(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	req.Header.Set("uname", "Test")
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(Handler.Login)
