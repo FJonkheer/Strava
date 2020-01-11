@@ -3,11 +3,12 @@ package Helper
 import (
 	"archive/zip"
 	"encoding/csv"
-	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io"
+	"math"
 	"os"
 	"testing"
+	"time"
 )
 
 func Test(t *testing.T) {
@@ -24,14 +25,14 @@ func MD5_Test(t *testing.T) {
 func GPX_Test(t *testing.T) {
 	assert.Equal(t, CreateFolders("testfolder"), nil)
 	var testfolder []string
-	testfolder = append(testfolder, "existantfile.csv")
-	testdatei := "testfolder/existantfile.csv"
+	testfolder = append(testfolder, "gpx.csv")
+	testdatei := "testfolder/gpx.csv"
 	type Metadata struct {
 		Date        string  `xml:"metadata>time"`
 		Trackpoints []trkpt `xml:"trk>trkseg>trkpt"`
 	}
 	var TestMeta Metadata
-	assert.Equal(t, GpxRead(testdatei), TestMeta)
+	assert.NotEqual(t, GpxRead(testdatei), TestMeta)
 
 }
 
@@ -41,8 +42,6 @@ func FileAccess_Test(t *testing.T) {
 	CreateFolders("testfolder")
 	var testfolder []string
 	testfolder = append(testfolder, "existantfile.csv")
-	testfolder = append(testfolder, "testzip1.csv")
-	testfolder = append(testfolder, "testzip2.csv")
 	testdatei := "testfolder/existantfile.csv"
 	empData := [][]string{
 		{"test1", "test2"},
@@ -55,8 +54,6 @@ func FileAccess_Test(t *testing.T) {
 	}
 	csvwriter.Flush()
 	csvdatei.Close()
-	var teststruct UserFiles
-
 	assert.Equal(t, Validation(20, 20, 20), "f", "")
 	assert.Equal(t, Validation(6, 10, 20), "l", "")
 	assert.Equal(t, Latlongtodistance(0, 0, 0, 0, 0, 0), float64(0), "")
@@ -65,19 +62,18 @@ func FileAccess_Test(t *testing.T) {
 	//assert.Equal(t, interface{}(ReadCsv(testdatei)), empData)
 	assert.Equal(t, FileExists(testdatei), true)
 	assert.Equal(t, Scanforcsvfiles("testfolder"), testfolder)
-	assert.Equal(t, Parsecsvtostruct(testdatei), teststruct)
-	DeleteFiles(testdatei)
-	files := []string{"testzip1.csv", "testzip2.csv"}
+	os.Create("testfolder/testzip1.csv")
+	os.Create("testfolder/testzip2.csv")
+	files := []string{"testfolder/testzip1.csv", "testfolder/testzip2.csv"}
 	output := "done.zip"
-
 	if err := ZipFiles(output, files); err != nil {
 		panic(err)
 	}
-	fmt.Println("Zipped File:", output)
-	assert.Equal(t, FileExists(testdatei), false)
-	testfolder = append(testfolder, "test.zip")
-	UnZip("done.zip", "testfolder")
+	UnZip("done.zip", "")
 
+	DeleteFiles(testdatei)
+	DeleteFiles("testfolder/testzip1.csv")
+	DeleteFiles("testfolder/testzip2.csv")
 }
 func CalculationTest(t *testing.T) {
 	assert.Equal(t, Validation(20, 20, 20), "f", "")
@@ -91,22 +87,22 @@ func CalculationTest(t *testing.T) {
 	}
 	assert.Equal(t, CreateFolders("testfolder"), nil)
 	var testfolder []string
-	testfolder = append(testfolder, "existantfile.csv")
-	testdatei := "testfolder/existantfile.csv"
+	testfolder = append(testfolder, "calc.csv")
+	testdatei := "testfolder/calc.csv"
 	a, b, c, d, e := calculateEverything(testdatei)
-	assert.Equal(t, a, "0")
-	assert.Equal(t, b, "0")
-	assert.Equal(t, c, "0")
-	assert.Equal(t, d, "0")
-	assert.Equal(t, e, "0")
+	assert.Equal(t, a, time.Duration(0))
+	assert.Equal(t, b, float64(0))
+	assert.Equal(t, c, float64(0))
+	assert.NotEqual(t, d, math.NaN())
+	assert.Equal(t, e, time.Duration(0))
 	assert.Equal(t, getDate(testdatei), "")
 	f, g, h, i, j, k := GetInfo(testdatei)
-	assert.Equal(t, f, "0")
-	assert.Equal(t, g, "0")
-	assert.Equal(t, h, "0")
-	assert.Equal(t, i, "0")
-	assert.Equal(t, j, "0")
-	assert.Equal(t, k, "0")
+	assert.Equal(t, f, "")
+	assert.Equal(t, g, time.Duration(0))
+	assert.Equal(t, h, float64(0))
+	assert.Equal(t, i, float64(0))
+	assert.NotEqual(t, j, math.NaN())
+	assert.Equal(t, k, time.Duration(0))
 }
 
 //https://golangcode.com/create-zip-files-in-go/
