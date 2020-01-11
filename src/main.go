@@ -51,7 +51,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		title = "Login"
 		p, _ = loadPage(title)
 	}
-	fmt.Fprintf(w, "<div>%s</div>", p.Body) //gibt den Body dem Benutzer aus
+	_, err = fmt.Fprintf(w, "<div>%s</div>", p.Body) //gibt den Body dem Benutzer aus
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func back(w http.ResponseWriter, r *http.Request) {

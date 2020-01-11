@@ -29,8 +29,13 @@ func GpxRead(path string) Metadata {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("XML successfully opened")  //Ausgabe, kann weg
-	defer xmlFile.Close()                   //schließen des GPX-Files
+	fmt.Println("XML successfully opened") //Ausgabe, kann weg
+	defer func() {
+		err = xmlFile.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}() //schließen des GPX-Files
 	byteValue, _ := ioutil.ReadAll(xmlFile) //den Inhalt des GPX-Files auslesen
 
 	var Run Metadata //ein Objekt der Struktur metadata erstellen
