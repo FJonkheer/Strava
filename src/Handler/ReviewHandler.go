@@ -53,7 +53,10 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 		path := "Files/" + cookie.Value + "/" //Benutzername muss abgefragt werden
 		file := Helper.GetfileName(r)         //Das Feld, wo die Datei ausgewählt wurde
 		path = path + file
-		Helper.DeleteFiles(path)
+		err := Helper.DeleteFiles(path)
+		if err != nil {
+			fmt.Println("Konnte Datei nicht löschen")
+		}
 		http.Redirect(w, r, "/Review", 301)
 	}
 }
@@ -88,7 +91,10 @@ func searchcomment(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, file := range files {
 			file = strings.Replace(file, ".csv", "", -1)
-			fmt.Fprintf(w, "<div>%s</div><br>", file)
+			_, err := fmt.Fprintf(w, "<div>%s</div><br>", file)
+			if err != nil {
+				fmt.Println("Fehler bei Ausgabe")
+			}
 		}
 	}
 }

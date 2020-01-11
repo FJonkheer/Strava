@@ -14,7 +14,6 @@ import (
 /*
 TODO:
 	- Die Review-Page
-		- Löschen von GPX-Dateien (Bestätigung fehlt, der Rest fertig)
 		- Sortieren der Einträge nach Datum
 		- alle Dateien gleichzeitig auswählbar (nicht gut)
 	- Caching

@@ -46,8 +46,8 @@ func Test(t *testing.T) {
 	assert.NotEqual(t, Helper.GetMD5Hash("Test"), "8b1a9953c4611296a827abf8c47804d7", "")
 	assert.Equal(t, Helper.Validation(20, 20, 20), "f", "")
 	assert.Equal(t, Helper.Validation(6, 10, 20), "l", "")
-	assert.Equal(t, Helper.Latlongtodistance(0, 0, 0, 0, 0, 0), float64(0), "")
-	assert.Equal(t, Helper.Latlongtodistance(10, 10, 20, 20, 10, 0), float64(1.5464880483491938e+06), "")
+	assert.Equal(t, Helper.Latlongtodistance(0, 0, 0, 0), float64(0), "")
+	assert.Equal(t, Helper.Latlongtodistance(10, 10, 20, 20), float64(1.5464880483491938e+06), "")
 	HttpTests(t)
 	LoginTest(t)
 }
