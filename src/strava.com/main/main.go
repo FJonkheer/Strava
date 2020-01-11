@@ -1,14 +1,14 @@
 package main
 
 import (
-	"Handler"
-	"Helper"
 	"flag"
 	"fmt"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strava.com/Handler"
+	"strava.com/Helper"
 )
 
 /*
@@ -66,7 +66,7 @@ var t = template.Must(template.New("Review.html").ParseFiles(paths...))
 
 func renderReview(w http.ResponseWriter, r *http.Request) {
 	cookie, _ := r.Cookie(Handler.Uname)
-	user := Helper.Parsecsvtostruct(cookie.Value)
+	user := Helper.Parsecsvtostruct("Files/" + cookie.Value)
 	err := t.Execute(w, user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

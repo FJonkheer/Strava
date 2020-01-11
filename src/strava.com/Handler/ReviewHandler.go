@@ -1,9 +1,9 @@
 package Handler
 
 import (
-	"Helper"
 	"fmt"
 	"net/http"
+	"strava.com/Helper"
 	"strings"
 )
 

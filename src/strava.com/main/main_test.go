@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"Handler"
 	"net/http/httptest"
+	"strava.com/Handler"
 	"testing"
 )
 

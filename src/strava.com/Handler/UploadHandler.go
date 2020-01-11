@@ -1,13 +1,13 @@
 package Handler
 
 import (
-	"Helper"
 	"encoding/csv"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strava.com/Helper"
 	"time"
 )
 

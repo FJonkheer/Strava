@@ -165,9 +165,8 @@ func Scanforcsvfiles(path string) []string {
 	return csvfiles
 }
 
-func Parsecsvtostruct(username string) UserFiles {
+func Parsecsvtostruct(path string) UserFiles {
 	var user UserFiles
-	path := "Files/" + username
 	csvfiles := Scanforcsvfiles(path)
 	var onefile File
 	for _, file := range csvfiles {
