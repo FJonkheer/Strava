@@ -1,6 +1,7 @@
 package Helper
 
 import (
+	"archive/zip"
 	"encoding/csv"
 	"io"
 	"io/ioutil"
@@ -181,4 +182,38 @@ func GetfileName(r *http.Request) string {
 		}
 	}
 	return file
+}
+
+/* Source = https://golangcode.com/unzip-files-in-go/ */
+func UnZip(src string, dir string) (string, error) {
+	r, err := zip.OpenReader(src)
+	defer r.Close()
+	fpath := ""
+	for _, f := range r.File {
+		fpath = dir + f.Name
+		if f.FileInfo().IsDir() {
+			// Make Folder
+			os.MkdirAll(fpath, os.ModePerm)
+			continue
+		}
+		// Make File
+		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			return "", err
+		}
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return "", err
+		}
+		rc, err := f.Open()
+		if err != nil {
+			return "", err
+		}
+		_, err = io.Copy(outFile, rc)
+		outFile.Close()
+		rc.Close()
+		if err != nil {
+			return "", err
+		}
+	}
+	return fpath, nil
 }
