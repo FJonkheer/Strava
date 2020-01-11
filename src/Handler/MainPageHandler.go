@@ -5,8 +5,10 @@ import (
 )
 
 func Redirecting(w http.ResponseWriter, r *http.Request) { //Weiterleiten auf Upload oder Review
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
 		if r.FormValue("redirect") == "Upload File" {
@@ -19,8 +21,10 @@ func Redirecting(w http.ResponseWriter, r *http.Request) { //Weiterleiten auf Up
 
 func upload(w http.ResponseWriter, r *http.Request) {
 
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
 		http.Redirect(w, r, "/Upload", 301) //Upload-Seite
@@ -28,8 +32,10 @@ func upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func review(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
 		http.Redirect(w, r, "/Review", 301) //Review-Seite

@@ -8,8 +8,10 @@ import (
 )
 
 func HandleReview(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
 		switch r.FormValue("review") {
@@ -45,12 +47,14 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer 
 //Löschen eines Eintrags
 func deleteHandler(w http.ResponseWriter, r *http.Request) {
 	//TODO: Abfrage ob wirklich gelöscht werden soll
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-		path := "Files/" + cookie.Value + "/" //Benutzername muss abgefragt werden
-		file := Helper.GetfileName(r)         //Das Feld, wo die Datei ausgewählt wurde
+		path := "Files/" + name.Value + "/" //Benutzername muss abgefragt werden
+		file := Helper.GetfileName(r)       //Das Feld, wo die Datei ausgewählt wurde
 		path = path + file
 		Helper.DeleteFiles(path)
 		http.Redirect(w, r, "/Review", 301)
@@ -58,12 +62,13 @@ func deleteHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func changeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoPage
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-
-		path := "Files/" + cookie.Value + "/" //Benutzername muss abgefragt werden
+		path := "Files/" + name.Value + "/" //Benutzername muss abgefragt werden
 		file := Helper.GetfileName(r)
 		path = path + file
 		Helper.ChangeInfoFile(w, r, path)
@@ -72,11 +77,13 @@ func changeHandler(w http.ResponseWriter, r *http.Request) { //Ändern der InfoP
 }
 
 func searchcomment(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-		path := "Files/" + cookie.Value + "/" //Benutzername muss abgefragt werden
+		path := "Files/" + name.Value + "/" //Benutzername muss abgefragt werden
 		comment := r.FormValue("searchcomment")
 		var files []string
 		csvfiles := Helper.Scanforcsvfiles(path)

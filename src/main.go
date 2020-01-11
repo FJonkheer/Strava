@@ -36,6 +36,8 @@ type Page struct { //Die Struktur einer Website
 	Body  []byte
 }
 
+var SessionID string
+
 func loadPage(title string) (*Page, error) {
 	filename := title + ".html"
 	body, err := ioutil.ReadFile("Sites/" + filename) //liest den body der aufzurufenden Seite aus

@@ -13,12 +13,13 @@ import (
 
 //Die Upload-Funktion
 func Uploader(w http.ResponseWriter, r *http.Request) {
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+	name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-
-		Pfad := "Files/" + cookie.Value + "/"        //jeder Benutzer hat seinen eigenen Dateispeicherort
+		Pfad := "Files/" + name.Value + "/"          //jeder Benutzer hat seinen eigenen Dateispeicherort
 		file, fileheader, err := r.FormFile("datei") //nimmt sich die Datei aus dem HTTP Request
 		if err != nil {
 			fmt.Fprintf(w, "<div>%s</div>", err)

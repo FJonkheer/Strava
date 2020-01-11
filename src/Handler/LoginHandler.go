@@ -2,11 +2,8 @@ package Handler
 
 import (
 	"Helper"
-	"crypto/rand"
-	"encoding/base64"
 	"encoding/csv"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -87,8 +84,10 @@ func register(w http.ResponseWriter, r *http.Request) {
 			csvwriter.Flush()
 			csvFile.Close()
 			expiration := time.Now().Add(365 * 24 * time.Hour)
-			cookie := http.Cookie{Name: "Test", Value: Uname, Expires: expiration}
+			cookie := http.Cookie{Name: "Name", Value: Uname, Expires: expiration}
 			http.SetCookie(w, &cookie)
+			cookie2 := http.Cookie{Name: "Password", Value: pword, Expires: expiration}
+			http.SetCookie(w, &cookie2)
 
 		}
 	} else {
@@ -99,18 +98,16 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
-		Name:    "Test",
+		Name:    "Name",
+		MaxAge:  -1,
+		Expires: time.Now().Add(-100 * time.Hour), // Set expires for older versions of IE
+		Path:    "/"})
+	http.SetCookie(w, &http.Cookie{
+		Name:    "Password",
 		MaxAge:  -1,
 		Expires: time.Now().Add(-100 * time.Hour), // Set expires for older versions of IE
 		Path:    "/"})
 	http.Redirect(w, r, "/Login", 301)
-}
-func sessionId() string {
-	b := make([]byte, 32)
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return ""
-	}
-	return base64.URLEncoding.EncodeToString(b)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -121,27 +118,37 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "<div>%s</div>", "Keine User Vorhanden")
 	} else {
 		if len(Uname) > 0 && len(pword) > 0 {
-			pword = pword + salt                                   //Salting
-			pword = Helper.GetMD5Hash(pword)                       //Hashing
-			lines, err := Helper.ReadCsv("data/userdata/Test.csv") //Auslesen aller Einloggdaten
-			if err != nil {
-				panic(err)
+			pword = pword + salt             //Salting
+			pword = Helper.GetMD5Hash(pword) //Hashing
+			if validateUser(Uname, pword) {  //Wenn es eine passende User/Passwort-Kombination gibt
+				expiration := time.Now().Add(24 * time.Hour)
+				cookie := http.Cookie{Name: "Name", Value: Uname, Expires: expiration}
+				http.SetCookie(w, &cookie)
+				cookie2 := http.Cookie{Name: "Password", Value: pword, Expires: expiration}
+				http.SetCookie(w, &cookie2)
+				http.Redirect(w, r, "/MainPage", 301) //Wird auf die Startseite weitergeleitet
+			} else {
+				fmt.Fprintf(w, "<div>%s</div>", "Keine passenden Einloggdaten gefunden") //Falls es keine passende Kombination gibt
 			}
-			for _, line := range lines {
-				data := User{
-					username: line[0],
-					password: line[1],
-				}
-				if data.username == Uname && data.password == pword { //Wenn es eine passende User/Passwort-Kombination gibt
-					expiration := time.Now().Add(24 * time.Hour)
-					cookie := http.Cookie{Name: "Test", Value: Uname, Expires: expiration}
-					http.SetCookie(w, &cookie)
-					http.Redirect(w, r, "/MainPage", 301) //Wird auf die Startseite weitergeleitet
-				}
-			}
-			fmt.Fprintf(w, "<div>%s</div>", "Keine passenden Einloggdaten gefunden") //Falls es keine passende Kombination gibt
+
 		} else {
-			fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz") //Wenn kein Passwort und/oder Benutzername eingegeben wurde
+			fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
+		} //Wenn kein Passwort und/oder Benutzername eingegeben wurde
+	}
+}
+func validateUser(uname string, pword string) bool {
+	lines, err := Helper.ReadCsv("data/userdata/Test.csv") //Auslesen aller Einloggdaten
+	if err != nil {
+		panic(err)
+	}
+	for _, line := range lines {
+		data := User{
+			username: line[0],
+			password: line[1],
+		}
+		if data.username == uname && data.password == pword { //Wenn es eine passende User/Passwort-Kombination gibt
+			return true
 		}
 	}
+	return false
 }
