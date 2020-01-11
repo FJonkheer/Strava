@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Handler"
-	"Helper"
+	"./Handler"
+	"./Helper"
 	"flag"
 	"fmt"
 	"html/template"
