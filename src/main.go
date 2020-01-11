@@ -29,7 +29,7 @@ Optional:
 	- Upload-Konventionen (Muss ein Kommentar eingegeben werden? Wurde überhaupt eine Datei ausgewählt?)
 	- Volltextsuche für Kommentare (Bessere Ausgabe?)
 */
-
+// MAtrikel-Nr 3736476, 8721083
 type Page struct { //Die Struktur einer Website
 	Title string
 	Body  []byte

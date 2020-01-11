@@ -1,5 +1,6 @@
 package Helper
 
+// MAtrikel-Nr 3736476, 8721083
 import (
 	"crypto/md5"
 	"encoding/hex"
