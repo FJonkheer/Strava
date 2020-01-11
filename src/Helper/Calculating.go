@@ -31,7 +31,7 @@ func CalculateDistance(Run Metadata) float64 {
 		Long2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Longitude, 32)
 		Lat, _ := strconv.ParseFloat(Run.Trackpoints[i].Latitude, 32)
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
-		dist := Latlongtodistance(Lat, Long, Lat2, Long2)
+		dist := Latlongtodistance(Lat, Long, Lat2, Long2, 0, 0)
 		totaldistance += dist
 	}
 	totaldistance = totaldistance / 1000
@@ -51,7 +51,7 @@ func calculateSpeed(Run Metadata) (time.Duration, float64, float64, time.Duratio
 		Long2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Longitude, 32)
 		Lat, _ := strconv.ParseFloat(Run.Trackpoints[i].Latitude, 32)
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
-		distance := Latlongtodistance(Lat, Long, Lat2, Long2)
+		distance := Latlongtodistance(Lat, Long, Lat2, Long2, 0, 0)
 		speed := distance / timediff.Seconds()
 		speed = speed * 3.6
 
@@ -81,7 +81,7 @@ func Validation(maxspeed float64, avgspeed float64, distance float64) string {
 	}
 }
 
-func Latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64) float64 {
+func Latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, i int, i2 int) float64 {
 	// SOURCE: https://www.geodatasource.com/developers/go
 	/*
 		const PI float64 = 3.141592653589793

@@ -1,8 +1,11 @@
 package Helper
 
 import (
+	"archive/zip"
 	"encoding/csv"
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"os"
 	"testing"
 )
@@ -35,8 +38,11 @@ func GPX_Test(t *testing.T) {
 func FileAccess_Test(t *testing.T) {
 	//Vorbereitung
 	assert.Equal(t, CreateFolders("testfolder"), nil)
+	CreateFolders("testfolder")
 	var testfolder []string
 	testfolder = append(testfolder, "existantfile.csv")
+	testfolder = append(testfolder, "testzip1.csv")
+	testfolder = append(testfolder, "testzip2.csv")
 	testdatei := "testfolder/existantfile.csv"
 	empData := [][]string{
 		{"test1", "test2"},
@@ -61,16 +67,23 @@ func FileAccess_Test(t *testing.T) {
 	assert.Equal(t, Scanforcsvfiles("testfolder"), testfolder)
 	assert.Equal(t, Parsecsvtostruct(testdatei), teststruct)
 	DeleteFiles(testdatei)
+	files := []string{"testzip1.csv", "testzip2.csv"}
+	output := "done.zip"
+
+	if err := ZipFiles(output, files); err != nil {
+		panic(err)
+	}
+	fmt.Println("Zipped File:", output)
 	assert.Equal(t, FileExists(testdatei), false)
 	testfolder = append(testfolder, "test.zip")
-	UnZip("test.zip", "testfolder")
+	UnZip("done.zip", "testfolder")
 
 }
 func CalculationTest(t *testing.T) {
 	assert.Equal(t, Validation(20, 20, 20), "f", "")
 	assert.Equal(t, Validation(6, 10, 20), "l", "")
 	assert.Equal(t, Latlongtodistance(0, 0, 0, 0, 0, 0), float64(0), "")
-	assert.Equal(t, Latlongtodistance(10, 10, 20, 20, 10, 0), float64(1.5464880483491938e+06), "")
+	assert.Equal(t, Latlongtodistance(10, 10, 20, 20, 0, 0), float64(1.5464880483491938e+06), "")
 
 	type Metadata struct {
 		Date        string  `xml:"metadata>time"`
@@ -94,4 +107,60 @@ func CalculationTest(t *testing.T) {
 	assert.Equal(t, i, "0")
 	assert.Equal(t, j, "0")
 	assert.Equal(t, k, "0")
+}
+
+//https://golangcode.com/create-zip-files-in-go/
+func ZipFiles(filename string, files []string) error {
+	newZipFile, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+	defer newZipFile.Close()
+
+	zipWriter := zip.NewWriter(newZipFile)
+	defer zipWriter.Close()
+
+	// Add files to zip
+	for _, file := range files {
+		if err = AddFileToZip(zipWriter, file); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+//https://golangcode.com/create-zip-files-in-go/
+func AddFileToZip(zipWriter *zip.Writer, filename string) error {
+
+	fileToZip, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer fileToZip.Close()
+
+	// Get the file information
+	info, err := fileToZip.Stat()
+	if err != nil {
+		return err
+	}
+
+	header, err := zip.FileInfoHeader(info)
+	if err != nil {
+		return err
+	}
+
+	// Using FileInfoHeader() above only uses the basename of the file. If we want
+	// to preserve the folder structure we can overwrite this with the full path.
+	header.Name = filename
+
+	// Change to deflate to gain better compression
+	// see http://golang.org/pkg/archive/zip/#pkg-constants
+	header.Method = zip.Deflate
+
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(writer, fileToZip)
+	return err
 }
