@@ -1,9 +1,9 @@
 package main
+
 // MAtrikel-Nr 3736476, 8721083
 import (
-	"net/http"
-
 	"Handler"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 )
