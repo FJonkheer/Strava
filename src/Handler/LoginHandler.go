@@ -19,7 +19,7 @@ type User struct { //Die Struktur eines Benutzers
 
 func Handling(w http.ResponseWriter, r *http.Request) { //Wurde "Login" oder "Registrieren" gedrückt?
 	if r.FormValue("login") == "Login" {
-		login(w, r)
+		Login(w, r)
 	} else {
 		register(w, r)
 	}
@@ -84,7 +84,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 			csvwriter.Flush()
 			csvFile.Close()
 			expiration := time.Now().Add(365 * 24 * time.Hour)
-			cookie := http.Cookie{Name: Uname, Value: Uname, Expires: expiration}
+			cookie := http.Cookie{Name: Uname, Value: "LoggedIn", Expires: expiration}
 			http.SetCookie(w, &cookie)
 		}
 	} else {
@@ -93,7 +93,20 @@ func register(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/MainPage", 301) //Nach dem Registrieren geht es zur MainPage
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
+func Logout(w http.ResponseWriter, r *http.Request) {
+	c := http.Cookie{
+		Name:    Uname,
+		Value:   "test",
+		Path:    "/",
+		Expires: time.Now(),
+		MaxAge:  -1,
+
+		HttpOnly: true}
+	http.SetCookie(w, &c)
+	http.Redirect(w, r, "/Login", 301)
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
 	Uname := r.FormValue("uname")
 	pword := r.FormValue("pword")
 	salt := "15967" //Wird zum Saling des Passwords genutzt

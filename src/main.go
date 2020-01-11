@@ -59,7 +59,7 @@ func back(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/MainPage", 301) //Zurück zur Startseite
 }
 
-var paths = []string{"ites/Review.html"}
+var paths = []string{"Sites/Review.html"}
 var t = template.Must(template.New("Review.html").ParseFiles(paths...))
 
 func renderReview(w http.ResponseWriter, r *http.Request) {

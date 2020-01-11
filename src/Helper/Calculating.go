@@ -19,12 +19,12 @@ func getDate(file string) string {
 
 func calculateEverything(file string) (time.Duration, float64, float64, float64, time.Duration) {
 	Run := GpxRead(file)
-	distance := calculateDistance(Run)
+	distance := CalculateDistance(Run)
 	duration, highspeed, avgspeed, standtime := calculateSpeed(Run)
 	return duration, distance, highspeed, avgspeed, standtime
 }
 
-func calculateDistance(Run Metadata) float64 {
+func CalculateDistance(Run Metadata) float64 {
 	totaldistance := 0.0
 	for i := 0; i < len(Run.Trackpoints)-1; i++ {
 		Long, _ := strconv.ParseFloat(Run.Trackpoints[i].Longitude, 32)
@@ -33,7 +33,7 @@ func calculateDistance(Run Metadata) float64 {
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
 		Elev1, _ := strconv.ParseFloat(Run.Trackpoints[i].Elevation, 32)
 		Elev2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Elevation, 32)
-		dist := latlongtodistance(Lat, Long, Lat2, Long2, Elev1, Elev2)
+		dist := Latlongtodistance(Lat, Long, Lat2, Long2, Elev1, Elev2)
 		totaldistance += dist
 	}
 	totaldistance = totaldistance / 1000
@@ -55,7 +55,7 @@ func calculateSpeed(Run Metadata) (time.Duration, float64, float64, time.Duratio
 		Lat2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Latitude, 32)
 		Elev1, _ := strconv.ParseFloat(Run.Trackpoints[i].Elevation, 32)
 		Elev2, _ := strconv.ParseFloat(Run.Trackpoints[i+1].Elevation, 32)
-		distance := latlongtodistance(Lat, Long, Lat2, Long2, Elev1, Elev2)
+		distance := Latlongtodistance(Lat, Long, Lat2, Long2, Elev1, Elev2)
 		speed := distance / timediff.Seconds()
 		speed = speed * 3.6
 
@@ -85,7 +85,7 @@ func Validation(maxspeed float64, avgspeed float64, distance float64) string {
 	}
 }
 
-func latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, elev1 float64, elev2 float64) float64 {
+func Latlongtodistance(lat1 float64, lng1 float64, lat2 float64, lng2 float64, elev1 float64, elev2 float64) float64 {
 	// SOURCE: https://www.geodatasource.com/developers/go
 	/*
 		const PI float64 = 3.141592653589793

@@ -8,19 +8,24 @@ import (
 )
 
 func HandleReview(w http.ResponseWriter, r *http.Request) {
-	switch r.FormValue("review") {
-	case "Delete Record":
-		deleteHandler(w, r)
-		break
-	case "Search":
-		searchcomment(w, r)
-		break
-	case "Change Info":
-		changeHandler(w, r)
-		break
-	default:
-		DownloadHandler(w, r)
-		break
+	cookie, _ := r.Cookie(Uname)
+	if cookie == nil {
+		http.Redirect(w, r, "/Login", 301)
+	} else {
+		switch r.FormValue("review") {
+		case "Delete Record":
+			deleteHandler(w, r)
+			break
+		case "Search":
+			searchcomment(w, r)
+			break
+		case "Change Info":
+			changeHandler(w, r)
+			break
+		default:
+			DownloadHandler(w, r)
+			break
+		}
 	}
 }
 

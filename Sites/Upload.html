@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Upload:</h1>
-    <form method="post" enctype="multipart/form-data" action="upload.php">
+    <form method="post" enctype="multipart/form-data" action="upload.php" >
         Aktivit&auml;t:&nbsp; &nbsp;
         <select name="types">
             <option>Laufen</option>
@@ -17,9 +17,13 @@
         <input name="comment" type="text" /><br><br>
         <input name="datei" type="file" accept=".gpx,.zip"><br><br>
         <input name="upload" type="submit" value="Upload" />
+
     </form>
     <form method="post" enctype="multipart/form-data" action="back.php">
         <input name="back" type="submit" value="Back to MainPage"/>
+    </form>
+    <form method="post" enctype="multipart/form-data" action="logout">
+        <input name="logout" type="submit" value="logout"/>
     </form>
 </body>
 </html>
