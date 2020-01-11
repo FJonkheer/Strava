@@ -3,6 +3,7 @@ package Helper
 import (
 	"archive/zip"
 	"encoding/csv"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -59,7 +60,12 @@ func ReadCsv(filename string) ([][]string, error) { //Eine CSV-Datei auslesen
 	if err != nil {
 		return [][]string{}, err
 	}
-	defer f.Close()
+	defer func() {
+		err = f.Close()
+	}()
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// Read File into a Variable
 	lines, err := csv.NewReader(f).ReadAll()
@@ -101,8 +107,10 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 	w.Header().Set("Content-Disposition", "attachment; filename="+file)
 	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 	e := strings.NewReader(path)
-	io.Copy(w, e)
-	//http.ServeFile(w, r, path)
+	_, err := io.Copy(w, e)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
@@ -126,10 +134,16 @@ func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
 	}
 	csvwriter := csv.NewWriter(infofile) //Beschreiben der CSV-Datei
 	for _, empRow := range empData {
-		csvwriter.Write(empRow)
+		err = csvwriter.Write(empRow)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 	csvwriter.Flush()
-	infofile.Close()
+	err = infofile.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
 	http.Redirect(w, r, "/Review", 301)
 }
 
@@ -173,9 +187,12 @@ func Parsecsvtostruct(username string) UserFiles {
 }
 
 func GetfileName(r *http.Request) string {
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
 	file := ""
-	for key, _ := range r.Form {
+	for key := range r.Form {
 		if strings.Contains(key, ".gpx") {
 			file = key
 			break
@@ -187,13 +204,21 @@ func GetfileName(r *http.Request) string {
 /* Source = https://golangcode.com/unzip-files-in-go/ */
 func UnZip(src string, dir string) (string, error) {
 	r, err := zip.OpenReader(src)
-	defer r.Close()
+	defer func() {
+		err = r.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
 	fpath := ""
 	for _, f := range r.File {
 		fpath = dir + f.Name
 		if f.FileInfo().IsDir() {
 			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
+			err = os.MkdirAll(fpath, os.ModePerm)
+			if err != nil {
+				fmt.Println(err)
+			}
 			continue
 		}
 		// Make File
@@ -209,8 +234,14 @@ func UnZip(src string, dir string) (string, error) {
 			return "", err
 		}
 		_, err = io.Copy(outFile, rc)
-		outFile.Close()
-		rc.Close()
+		err = outFile.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = rc.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
 		if err != nil {
 			return "", err
 		}

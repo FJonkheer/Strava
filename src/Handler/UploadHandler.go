@@ -22,24 +22,48 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		Pfad := "Files/" + name.Value + "/"          //jeder Benutzer hat seinen eigenen Dateispeicherort
 		file, fileheader, err := r.FormFile("datei") //nimmt sich die Datei aus dem HTTP Request
 		if err != nil {
-			fmt.Fprintf(w, "<div>%s</div>", err)
+			_, err := fmt.Fprintf(w, "<div>%s</div>", err)
+			if err != nil {
+				fmt.Println()
+			}
 		}
 		filename := fileheader.Filename     //der Dateiname wird aus dem Header gesucht
 		e, _ := Helper.FilePathExists(Pfad) //Existiert der Ort, an dem die Daten gespeichert werden sollen schon
 		if !e {
-			Helper.CreateFolders(Pfad) //Wenn die Ordner nicht existieren, sollen diese erstellt werden
+			err := Helper.CreateFolders(Pfad) //Wenn die Ordner nicht existieren, sollen diese erstellt werden
+			if err != nil {
+				fmt.Println("Konnte Ordner nicht erstellen")
+			}
 		}
-		defer file.Close()
+		defer func() {
+			err = file.Close()
+			if err != nil {
+				fmt.Println(err)
+			}
+		}()
+
 		fileBytes, _ := ioutil.ReadAll(file)     //Liest die Datei aus
 		newFile, _ := os.Create(Pfad + filename) //Erstellt die Zieldatei
-		newFile.Write(fileBytes)                 //Beschreibt die Zieldatei mit den Daten der Ursprungsdatei
-		newFile.Close()
+		_, err = newFile.Write(fileBytes)        //Beschreibt die Zieldatei mit den Daten der Ursprungsdatei
+		err = file.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = newFile.Close()
+		err = file.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
 		detectedFileType := http.DetectContentType(fileBytes) //Ermittelt die Dateiendung
 		datei := filename
 		if detectedFileType == "application/zip" { //Falls es sich um eine .zip handelt, muss diese noch entpackt werden
 			datei, err = Helper.UnZip(Pfad+filename, Pfad) //Entpacken
 			if err != nil {
-				fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
+				_, err = fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
+				err = file.Close()
+				if err != nil {
+					fmt.Println(err)
+				}
 			}
 		} else {
 			datei = Pfad + datei
@@ -75,10 +99,18 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		}
 		csvwriter := csv.NewWriter(infofile) //Beschreiben der CSV-Datei
 		for _, empRow := range empData {
-			csvwriter.Write(empRow)
+			err = csvwriter.Write(empRow)
+			err = file.Close()
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 		csvwriter.Flush()
-		infofile.Close()
+		err = infofile.Close()
+		err = file.Close()
+		if err != nil {
+			fmt.Println(err)
+		}
 		fmt.Println(empData)
 		http.Redirect(w, r, "/MainPage", 301)
 	}

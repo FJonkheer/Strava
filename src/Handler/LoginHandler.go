@@ -37,7 +37,10 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 		t, _ := Helper.FilePathExists("data/userdata") //gibt es den Dateispeicherpfad noch nicht?
 		if !t {
-			Helper.CreateFolders("data/userdata") //Dann werden erst noch die neuen Ordner erstellt
+			err := Helper.CreateFolders("data/userdata") //Dann werden erst noch die neuen Ordner erstellt
+			if err != nil {
+				fmt.Println("Ordner konnte nicht erstellt werden")
+			}
 		}
 
 		if !Helper.FileExists("data/userdata/Test.csv") { //existiert die Speicherdatei schon?
@@ -52,7 +55,10 @@ func register(w http.ResponseWriter, r *http.Request) {
 				_ = csvwriter.Write(empRow) //Und die Indexe geschrieben
 			}
 			csvwriter.Flush()
-			csvFile.Close()
+			err = csvFile.Close()
+			if err != nil {
+				fmt.Println("Datei konnte nicht geschlossen werden")
+			}
 		}
 		lines, err := Helper.ReadCsv("data/userdata/Test.csv") //CSV-Auslesen
 		if err != nil {
@@ -68,9 +74,15 @@ func register(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		if isGone {
-			fmt.Fprintf(w, "<div>%s</div>", "Username schon vorhanden")
+			_, err := fmt.Fprintf(w, "<div>%s</div>", "Username schon vorhanden")
+			if err != nil {
+				fmt.Println("Fehler bei Ausgabe")
+			}
 		} else { //Wenn es den Benutzernamen noch nicht gibt
-			os.Open("data/userdata/Test.csv")
+			_, err := os.Open("data/userdata/Test.csv")
+			if err != nil {
+				fmt.Println("Datei konnte nicht geöffnet werden")
+			}
 			empData := [][]string{
 				{Uname, pword}}
 			csvFile, err := os.OpenFile("data/userdata/Test.csv", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
@@ -82,7 +94,10 @@ func register(w http.ResponseWriter, r *http.Request) {
 				_ = csvwriter.Write(empRow) //schreibe die neuen Logindaten in die Speicherdatei
 			}
 			csvwriter.Flush()
-			csvFile.Close()
+			err = csvFile.Close()
+			if err != nil {
+				fmt.Println()
+			}
 			expiration := time.Now().Add(365 * 24 * time.Hour)
 			cookie := http.Cookie{Name: "Name", Value: Uname, Expires: expiration}
 			http.SetCookie(w, &cookie)
@@ -91,7 +106,10 @@ func register(w http.ResponseWriter, r *http.Request) {
 
 		}
 	} else {
-		fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
+		_, err := fmt.Fprintf(w, "<div>%s</div>", "Username oder Passwort zu kurz")
+		if err != nil {
+			fmt.Println()
+		}
 	}
 	http.Redirect(w, r, "/MainPage", 301) //Nach dem Registrieren geht es zur MainPage
 }
@@ -115,7 +133,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	pword := r.FormValue("pword")
 	salt := "15967" //Wird zum Saling des Passwords genutzt
 	if !Helper.FileExists("data/userdata/Test.csv") {
-		fmt.Fprintf(w, "<div>%s</div>", "Keine User Vorhanden")
+		_, err := fmt.Fprintf(w, "<div>%s</div>", "Keine User Vorhanden")
+		if err != nil {
+			fmt.Println("Fehler bei Ausgabe")
+		}
 	} else {
 		if len(Uname) > 0 && len(pword) > 0 {
 			pword = pword + salt             //Salting
