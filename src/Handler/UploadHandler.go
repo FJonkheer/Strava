@@ -2,15 +2,12 @@ package Handler
 
 import (
 	"Helper"
-	"archive/zip"
 	"encoding/csv"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -41,7 +38,7 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		detectedFileType := http.DetectContentType(fileBytes) //Ermittelt die Dateiendung
 		datei := filename
 		if detectedFileType == "application/zip" { //Falls es sich um eine .zip handelt, muss diese noch entpackt werden
-			datei, err = unZip(Pfad+filename, Pfad) //Entpacken
+			datei, err = Helper.UnZip(Pfad+filename, Pfad) //Entpacken
 			if err != nil {
 				fmt.Fprintf(w, "<div>%s<div>", "Fehler beim entpacken: "+err.Error())
 			}
@@ -86,38 +83,4 @@ func Uploader(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(empData)
 		http.Redirect(w, r, "/MainPage", 301)
 	}
-}
-
-/* Source = https://golangcode.com/unzip-files-in-go/ */
-func unZip(src string, dir string) (string, error) {
-	r, err := zip.OpenReader(src)
-	defer r.Close()
-	fpath := ""
-	for _, f := range r.File {
-		fpath = dir + f.Name
-		if f.FileInfo().IsDir() {
-			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
-			continue
-		}
-		// Make File
-		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-			return "", err
-		}
-		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-		if err != nil {
-			return "", err
-		}
-		rc, err := f.Open()
-		if err != nil {
-			return "", err
-		}
-		_, err = io.Copy(outFile, rc)
-		outFile.Close()
-		rc.Close()
-		if err != nil {
-			return "", err
-		}
-	}
-	return fpath, nil
 }
