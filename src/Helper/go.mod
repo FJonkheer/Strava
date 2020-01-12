@@ -1,1 +1,1 @@
-module module  github.com/FJonkheer/Strava/src/Helper
+module github.com/FJonkheer/Strava/src/Helper
