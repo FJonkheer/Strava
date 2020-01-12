@@ -38,7 +38,7 @@ name, _ := r.Cookie("Name")
 	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-		path := "Files/" + cookie.Value //Benutzername muss abgefragt werden
+		path := "Files/" + name.Value //Benutzername muss abgefragt werden
 		file := Helper.GetfileName(r)   //Das Feld, wo die Datei ausgewählt wurde
 		path = path + "/" + file
 		Helper.DownloadFile(w, r, path)
