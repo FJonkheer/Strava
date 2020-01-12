@@ -1,8 +1,9 @@
 package Handler
+
 // MAtrikel-Nr 3736476, 8721083
 import (
-	"Helper"
 	"fmt"
+	"github.com/FJonkheer/Strava/src/Helper"
 	"net/http"
 	"strings"
 )
