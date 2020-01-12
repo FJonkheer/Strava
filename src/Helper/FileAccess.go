@@ -108,10 +108,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request, path string) { //Herun
 	w.Header().Set("Content-Disposition", "attachment; filename="+file)
 	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
 	e := strings.NewReader(path)
-	_, err := io.Copy(w, e)
-	if err != nil {
-		fmt.Println(err)
-	}
+	io.Copy(w, e)
 }
 
 func ChangeInfoFile(w http.ResponseWriter, r *http.Request, file string) {
