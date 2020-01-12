@@ -13,10 +13,11 @@ import (
 )
 
 func Test(t *testing.T) {
+	FileAccess_Test(t)
 	MD5_Test(t)
 	GPX_Test(t)
 	CalculationTest(t)
-	FileAccess_Test(t)
+	
 }
 func MD5_Test(t *testing.T) {
 	assert.Equal(t, GetMD5Hash("Hello"), "8b1a9953c4611296a827abf8c47804d7", "")
@@ -60,7 +61,7 @@ func FileAccess_Test(t *testing.T) {
 	assert.Equal(t, FileExists("testfolder/notexistentfile"), false)
 	//assert.Equal(t, interface{}(ReadCsv(testdatei)), empData)
 	assert.Equal(t, FileExists(testdatei), true)
-	assert.Equal(t, Scanforcsvfiles("testfolder"), []string{"existantfile.csv", "testzip1.csv", "testzip2.csv"})
+	assert.Equal(t, Scanforcsvfiles("testfolder"), testfolder)
 	os.Create("testfolder/testzip1.csv")
 	os.Create("testfolder/testzip2.csv")
 	files := []string{"testfolder/testzip1.csv", "testfolder/testzip2.csv"}
