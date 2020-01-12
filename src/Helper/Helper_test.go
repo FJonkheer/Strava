@@ -60,7 +60,7 @@ func FileAccess_Test(t *testing.T) {
 	assert.Equal(t, FileExists("testfolder/notexistentfile"), false)
 	//assert.Equal(t, interface{}(ReadCsv(testdatei)), empData)
 	assert.Equal(t, FileExists(testdatei), true)
-	assert.Equal(t, Scanforcsvfiles("testfolder"), testfolder)
+	assert.Equal(t, Scanforcsvfiles("testfolder"), []string{"existantfile.csv", "testzip1.csv", "testzip2.csv"})
 	os.Create("testfolder/testzip1.csv")
 	os.Create("testfolder/testzip2.csv")
 	files := []string{"testfolder/testzip1.csv", "testfolder/testzip2.csv"}
