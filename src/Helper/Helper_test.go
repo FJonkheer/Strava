@@ -14,9 +14,9 @@ import (
 
 func Test(t *testing.T) {
 	MD5_Test(t)
-	FileAccess_Test(t)
 	GPX_Test(t)
 	CalculationTest(t)
+	FileAccess_Test(t)
 }
 func MD5_Test(t *testing.T) {
 	assert.Equal(t, GetMD5Hash("Hello"), "8b1a9953c4611296a827abf8c47804d7", "")
