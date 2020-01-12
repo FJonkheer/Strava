@@ -1,1 +1,1 @@
-module Handler
+module  github.com/FJonkheer/Strava/src/Handler
