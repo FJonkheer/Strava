@@ -2,7 +2,7 @@ package main
 
 // MAtrikel-Nr 3736476, 8721083
 import (
-	"Handler"
+	"github.com/FJonkheer/Strava/src/Handler"
 	"net/http"
 	"net/http/httptest"
 	"testing"

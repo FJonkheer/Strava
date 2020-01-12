@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Handler"
-	"Helper"
+	"github.com/FJonkheer/Strava/src/Handler"
+	"github.com/FJonkheer/Strava/src/Helper"
 	"flag"
 	"fmt"
 	"html/template"

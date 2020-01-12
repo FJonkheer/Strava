@@ -1,0 +1,3 @@
+github.com/FJonkheer/Strava v0.0.0-20200112172235-f40153d9a2aa h1:PBs1jPcF2PbTKOypAKQD3ZbstA8S8b0Hm8ZDuDG7MxA=
+github.com/FJonkheer/Strava/src/Helper v0.0.0-20200112172235-f40153d9a2aa h1:Mf+bjq0YNxYyx04rb96Phi+6GJbyDmR8WJ8NqtizAaQ=
+github.com/FJonkheer/Strava/src/Helper v0.0.0-20200112172235-f40153d9a2aa/go.mod h1:DOUv8Q7DtKPdevNqTOChT7VDdkfMjw2S8LrG6hZuIKs=
