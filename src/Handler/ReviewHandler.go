@@ -32,11 +32,12 @@ func HandleReview(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func DownloadHandler(w http.ResponseWriter, r *http.Request) { //Download einer Datei
-	cookie, _ := r.Cookie("Test")
-	if cookie == nil {
+name, _ := r.Cookie("Name")
+	password, _ := r.Cookie("Password")
+
+	if !validateUser(name.Value, password.Value) {
 		http.Redirect(w, r, "/Login", 301)
 	} else {
-
 		path := "Files/" + cookie.Value //Benutzername muss abgefragt werden
 		file := Helper.GetfileName(r)   //Das Feld, wo die Datei ausgewählt wurde
 		path = path + "/" + file
